@@ -1,0 +1,76 @@
+{
+  "name": "feeds update test",
+  "steps": [
+    {
+      "step": "externalSteps",
+      "path": "feeds-deploy.scen.json"
+    },
+    {
+      "step": "scCall",
+      "txId": "updateInvalidSignature",
+      "tx": {
+        "from": "address:my_address",
+        "to": "sc:feeds_contract",
+        "function": "update",
+        "value": "0",
+        "arguments": [
+          "u32:1",
+          "0x2430f68ea2e8d4151992bb7fc3a4c472087a6149bf7e0232704396162ab7c1f7",
+
+          "u32:1",
+          {
+            "1-hearbeat": "u32:0",
+            "2-timestamp": "u32:1688998114",
+            "3-price": "nested:biguint:1000000000"
+          },
+
+          "u32:1",
+          "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1|0x611cf1e57a59c15317c177963bf555e368d61506032b69ca4d42094bed662a77aafc7cacdffe404be16444e5e8ccc0082b60ec0f98ac217b75e83a3ff5ea1d09"
+        ],
+        "gasLimit": "15,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "message": "str:invalid signature",
+        "status": "10",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "checkState",
+      "accounts": {
+        "address:my_address": {
+          "nonce": "3",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "address:other_address": {
+          "nonce": "0",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "sc:feeds_contract": {
+          "nonce": "0",
+          "balance": "0",
+          "storage": {
+            "str:staking_bank": "sc:staking_bank_contract",
+            "str:required_signatures": "1",
+            "str:decimals": "8"
+          },
+          "code": "file:../output/umbrella-feeds.wasm"
+        },
+        "sc:staking_bank_contract": {
+          "nonce": "0",
+          "balance": "0",
+          "storage": {
+            "str:validators|0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1": "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1|nested:str:localhost",
+            "str:addresses.len": "1",
+            "str:addresses.item|u32:1": "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"
+          },
+          "code": "file:../../staking-bank-static/staking-bank-static-local/output/staking-bank-static-local.wasm"
+        }
+      }
+    }
+  ]
+}

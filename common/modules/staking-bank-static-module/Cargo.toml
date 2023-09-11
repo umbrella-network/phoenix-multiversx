@@ -1,0 +1,13 @@
+[package]
+name = "staking-bank-static-module"
+version = "0.0.0"
+authors = [ "you",]
+edition = "2021"
+
+[lib]
+path = "src/staking_bank_static_module.rs"
+
+
+[dependencies.multiversx-sc]
+version = "=0.41.3"
+features = ["esdt-token-payment-legacy-decode"]

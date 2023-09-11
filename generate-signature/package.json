@@ -1,0 +1,17 @@
+{
+  "name": "generate-signature",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@multiversx/sdk-core": "^12.4.3",
+    "@multiversx/sdk-wallet": "^4.2.0"
+  },
+  "type": "module",
+  "module": "commonjs"
+}
