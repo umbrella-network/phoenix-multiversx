@@ -1,0 +1,29 @@
+{
+  "code": "file:umbrella-feeds/output/umbrella-feeds.wasm",
+  "registryCode": "file:registry/output/registry.wasm",
+  "stakingBankCode": {
+    "devnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
+    "testnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
+    "mainnet": "file:staking-bank-static/staking-bank-static-prod/output/staking-bank-static-prod.wasm",
+    "sbx": "file:staking-bank-static/staking-bank-static-sbx/output/staking-bank-static-sbx.wasm"
+  },
+  "abi": "offers/output/offers.abi.json",
+  "stakingBankAddress": {
+    "devnet": "erd1qqqqqqqqqqqqqpgqm5pj4el09rsrdu6nq90n0krufsfxqfzpm40q6a82zr",
+    "testnet": "",
+    "mainnet": "",
+    "sbx": "erd1qqqqqqqqqqqqqpgqrh2r7fapcl3j9cxjljvf6j0rny3a5z0am40qp7sde4"
+  },
+  "address": {
+    "devnet": "erd1qqqqqqqqqqqqqpgq7pmsrevyv47shxhr4nl8l59wcxjlvhjqm40qzne277",
+    "testnet": "",
+    "mainnet": "",
+    "sbx": "erd1qqqqqqqqqqqqqpgqljzxuqdql2nfzp7nhm8htd9dxwy54a02m40q540u0z"
+  },
+  "registryAddress": {
+    "devnet": "erd1qqqqqqqqqqqqqpgqqegeneldmj6k47un93fmxes2pg437q4rm40qdh0mmz",
+    "testnet": "",
+    "mainnet": "",
+    "sbx": "erd1qqqqqqqqqqqqqpgqjeldrmyup548jj4gepch0r9j95g9fezem40q4pqxuw"
+  }
+}
