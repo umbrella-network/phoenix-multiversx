@@ -15,6 +15,8 @@ mxpy wallet convert --in-format=raw-mnemonic --out-format=pem --outfile=./valida
 > <ctrl+D>
 ```
 
+Create json with keystore, use:  `--out-format=keystore-mnemonic`
+
 ## Build
 
 
