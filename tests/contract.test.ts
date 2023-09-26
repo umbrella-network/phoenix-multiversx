@@ -2,7 +2,6 @@ import { afterEach, assert, beforeEach, test } from "vitest";
 import { assertAccount } from "xsuite/assert";
 import { FWorld, FWorldContract, FWorldWallet } from "xsuite/world";
 import { e } from "xsuite/data";
-import { Address } from "@multiversx/sdk-core"
 import createKeccakHash from "keccak";
 import BigNumber from 'bignumber.js';
 import fs from 'fs';
@@ -86,6 +85,21 @@ const generateSignature = (priceKeyRaw: string, priceData: {
 
   return { priceKey, publicKey, signature, dataHash: dataHash.toString('hex') };
 }
+
+test("Deploy invalid required signatures", async () => {
+  await deployStakingBank();
+
+  await deployer.deployContract({
+    code: "file:umbrella-feeds/output/umbrella-feeds.wasm",
+    codeMetadata: [],
+    gasLimit: 10_000_000,
+    codeArgs: [
+      e.Addr(addressStakingBank),
+      e.U32(0),
+      e.U8(8)
+    ]
+  }).assertFail({ code: 4, message: 'Invalid required signatures' });
+});
 
 test("Deploy and update valid signature", async () => {
   await deployStakingBank();

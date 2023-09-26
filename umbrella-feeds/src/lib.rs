@@ -14,6 +14,8 @@ const MULTIVERSX_PREFIX: &[u8; 30] = b"\x19MultiversX Signed Message:\n32";
 pub trait UmbrellaFeeds: proxy::ProxyModule {
     #[init]
     fn init(&self, staking_bank: ManagedAddress, required_signatures: usize, decimals: u8) {
+        require!(required_signatures > 0, "Invalid required signatures");
+
         self.staking_bank().set(staking_bank);
         self.required_signatures().set(required_signatures);
         self.decimals().set(decimals);
