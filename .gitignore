@@ -16,3 +16,6 @@ wallet.json
 
 # Include ABI files in repo
 !**/output/*.abi.json
+
+*.pem
+*.env

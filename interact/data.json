@@ -12,18 +12,18 @@
     "devnet": "erd1qqqqqqqqqqqqqpgqm5pj4el09rsrdu6nq90n0krufsfxqfzpm40q6a82zr",
     "testnet": "",
     "mainnet": "",
-    "sbx": "erd1qqqqqqqqqqqqqpgqrh2r7fapcl3j9cxjljvf6j0rny3a5z0am40qp7sde4"
+    "sbx": "erd1qqqqqqqqqqqqqpgqu3hgh3s3sx7hcdakjygymr0fm9lh2qvuaczs0z2g5j"
   },
   "address": {
     "devnet": "erd1qqqqqqqqqqqqqpgq7pmsrevyv47shxhr4nl8l59wcxjlvhjqm40qzne277",
     "testnet": "",
     "mainnet": "",
-    "sbx": "erd1qqqqqqqqqqqqqpgqljzxuqdql2nfzp7nhm8htd9dxwy54a02m40q540u0z"
+    "sbx": "erd1qqqqqqqqqqqqqpgqq4yes0ynatw8e6mlce8a4vt0zxwk46dwaczsznrae3"
   },
   "registryAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqqegeneldmj6k47un93fmxes2pg437q4rm40qdh0mmz",
     "testnet": "",
     "mainnet": "",
-    "sbx": "erd1qqqqqqqqqqqqqpgqjeldrmyup548jj4gepch0r9j95g9fezem40q4pqxuw"
+    "sbx": "erd1qqqqqqqqqqqqqpgqjwx4pcmhmrd792g640yknsnsfqwtjdtaaczsj3uzys"
   }
 }

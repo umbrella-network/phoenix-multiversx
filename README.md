@@ -1,8 +1,24 @@
 # Umbrella Network MultiversX Contracts
 
-## Build
+## Init
 
 Need to have `mxpy` installed!
+
+https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy
+
+### Wallet creation
+
+```shell
+mxpy wallet new
+mxpy wallet convert --in-format=raw-mnemonic --out-format=pem --outfile=./validator.pem
+> <mnemonics><enter>
+> <ctrl+D>
+```
+
+Create json with keystore, use:  `--out-format=keystore-mnemonic`
+
+## Build
+
 
 `npm run build` - builds Registry, StakingBankStaticLocal and UmbrellaFeeds
 

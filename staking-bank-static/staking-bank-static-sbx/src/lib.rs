@@ -14,11 +14,11 @@ pub trait StakingBank:
 
         self.create(
             ManagedAddress::from(hex!("e25ba4aeb18500517d015aaa89d4632bf76c290f2e5776856540edd5036b3570")),
-            ManagedBuffer::from(b"https://validator.dev.umb.network/")
+            ManagedBuffer::from(b"https://validator.sbx.umb.network/")
         );
         self.create(
             ManagedAddress::from(hex!("5266c0d387721ca231deb5ea8ca31d5ebf2e9dff683c41d29618512f9e3111c9")),
-            ManagedBuffer::from(b"https://validator2.dev.umb.network/")
+            ManagedBuffer::from(b"https://validator2.sbx.umb.network/")
         );
     }
 }
