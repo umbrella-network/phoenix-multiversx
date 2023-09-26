@@ -62,7 +62,8 @@ program.command("deploy")
       codeArgs: [
         e.Addr(resultStakingBank.address),
         e.U32(BigInt(requiredSignatures)),
-        e.U8(BigInt(priceDecimals))
+        e.U8(BigInt(priceDecimals)),
+        e.U32(BigInt(envChain.select(data.chainId))),
       ]
     });
     console.log("Umbrella Feeds Result:", result);
@@ -121,7 +122,8 @@ program.command("upgrade")
       codeArgs: [
         e.Addr(envChain.select(data.stakingBankAddress)),
         e.U32(BigInt(requiredSignatures)),
-        e.U8(BigInt(priceDecimals))
+        e.U8(BigInt(priceDecimals)),
+        e.U32(BigInt(envChain.select(data.chainId))),
       ],
     });
     console.log("Umbrella Feeds Result:", result);
@@ -152,7 +154,12 @@ program.command("update")
       price: new BigNumber(price, 10),
     };
 
-    const { priceKey, publicKey, signature } = generateSignature(envChain.select(data.address), 'ETH-USD', priceData);
+    const { priceKey, publicKey, signature } = generateSignature(
+      envChain.select(data.chainId),
+      envChain.select(data.address),
+      'ETH-USD',
+      priceData
+    );
 
     const tx = await wallet.callContract({
       callee: envChain.select(data.address),
@@ -286,7 +293,12 @@ program.command("updateSdkCore").action(async () => {
     price: new BigNumber(1000000000, 10),
   };
 
-  const { priceKey, publicKey, signature } = generateSignature(envChain.select(data.address), 'ETH-USD', priceData);
+  const { priceKey, publicKey, signature } = generateSignature(
+    envChain.select(data.chainId),
+    envChain.select(data.address),
+    'ETH-USD',
+    priceData
+  );
 
   const updateInteraction = new Interaction(contract, new ContractFunction('update'), [
     new U32Value(1),
@@ -355,7 +367,7 @@ program.command("hashData").action(async () => {
 
   const result = parsedResponse.values[0].toString('hex');
 
-  const localDataHash = getDataHash(envChain.select(data.address), priceKeyHash, priceData);
+  const localDataHash = getDataHash(envChain.select(data.chainId), envChain.select(data.address), priceKeyHash, priceData);
 
   console.log('Hash data:', result);
   console.log('Local hash data:', localDataHash.toString('hex'));

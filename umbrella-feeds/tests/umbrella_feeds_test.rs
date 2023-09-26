@@ -77,6 +77,7 @@ where
                     managed_address!(staking_bank_wrapper.address_ref()),
                     required_signatures,
                     8,
+                    198003, // chain id
                 );
             })
             .assert_ok();
@@ -106,7 +107,7 @@ where
 
             signatures.push(Signature {
                 address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-                signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+                signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
             });
 
             sc.update(price_keys, price_datas, signatures);
@@ -156,7 +157,7 @@ fn update_valid_signature() {
 
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
 
         sc.update(price_keys, price_datas, signatures);
@@ -189,7 +190,7 @@ fn update_not_enough_signatures() {
 
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
 
         sc.update(price_keys, price_datas, signatures);
@@ -222,7 +223,7 @@ fn update_invalid_signature() {
 
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
 
         sc.update(price_keys, price_datas, signatures);
@@ -255,7 +256,7 @@ fn update_invalid_signer() {
 
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
 
         sc.update(price_keys, price_datas, signatures);
@@ -289,12 +290,12 @@ fn update_signatures_out_of_order() {
 
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
         // Duplicate signatures
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
 
         sc.update(price_keys, price_datas, signatures);
@@ -329,12 +330,12 @@ fn update_multiple_signatures_only_one_required() {
 
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
         // Duplicate signatures, but only one required so only the first one is taken into account
         signatures.push(Signature {
             address: managed_address!(&Address::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"))),
-            signature: ManagedByteArray::from(&hex!("acc722645175b983b7e0ad91e6db0e433845af1614475fe4e6db057e15da9e7136a33aa376d994b72fba05aacd00c7bacf883cf9dd56276479dd1ab12fb3e10e")),
+            signature: ManagedByteArray::from(&hex!("d9ef498d116dc9725807da9a7ae8de11a89a7588ec3bc716e567a78ac2cdfb89da3b54ec410bf05505ab03e135f5c08668a3689357f01454c42848a0396c3d05")),
         });
 
         sc.update(price_keys, price_datas, signatures);

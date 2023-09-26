@@ -25,5 +25,11 @@
     "testnet": "",
     "mainnet": "",
     "sbx": "erd1qqqqqqqqqqqqqpgqjwx4pcmhmrd792g640yknsnsfqwtjdtaaczsj3uzys"
+  },
+  "chainId": {
+    "devnet": 198003,
+    "testnet": 198002,
+    "mainnet": 198001,
+    "sbx": 198003
   }
 }

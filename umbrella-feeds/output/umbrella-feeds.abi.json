@@ -30,6 +30,10 @@
             {
                 "name": "decimals",
                 "type": "u8"
+            },
+            {
+                "name": "chain_id",
+                "type": "u32"
             }
         ],
         "outputs": []
@@ -199,7 +203,7 @@
             "mutability": "readonly",
             "inputs": [
                 {
-                    "name": "hash",
+                    "name": "initial_hash",
                     "type": "array32<u8>"
                 },
                 {
@@ -242,6 +246,16 @@
             "outputs": [
                 {
                     "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "chain_id",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
                 }
             ]
         },
