@@ -67,7 +67,7 @@ pub trait StakingBankStaticModule: events::StakingBankStaticEventsModule {
 
     #[view(verifyValidators)]
     fn verify_validators(&self, validators: MultiValueEncoded<ManagedAddress>) -> bool {
-        if validators.len() == 0 {
+        if validators.is_empty() {
             return false;
         }
 
@@ -77,7 +77,7 @@ pub trait StakingBankStaticModule: events::StakingBankStaticEventsModule {
             }
         }
 
-        return true;
+        true
     }
 
     #[view]

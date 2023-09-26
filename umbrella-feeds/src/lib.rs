@@ -126,7 +126,7 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
     fn get_price_data_by_name(&self, name: ManagedBuffer) -> PriceData<Self::Api> {
         let key = self.crypto().keccak256(name);
 
-        let prices_mapper = self.prices(&key.as_managed_buffer());
+        let prices_mapper = self.prices(key.as_managed_buffer());
 
         if prices_mapper.is_empty() {
             return PriceData {
@@ -147,7 +147,7 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
     ) -> ManagedByteArray<KECCAK256_RESULT_LEN> {
         let mut data = ManagedBuffer::new();
 
-        data.append(&self.blockchain().get_sc_address().as_managed_buffer());
+        data.append(self.blockchain().get_sc_address().as_managed_buffer());
 
         for price_key in price_keys.iter() {
             data.append(&price_key);
@@ -182,7 +182,7 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
         for index in 0..required_signatures {
             let raw_signature: Signature<Self::Api> = signatures_vec.get(index);
 
-            self.verify_signature(&hash, &raw_signature);
+            self.verify_signature(hash, &raw_signature);
 
             require!(validators.find(&raw_signature.address).is_none(), "Signatures out of order");
 
@@ -201,15 +201,15 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
 
         // TODO: Is this prefix needed? And it can be moved to the initial_hash instead
         data.append(&ManagedBuffer::from(MULTIVERSX_PREFIX));
-        data.append(&initial_hash.as_managed_buffer());
+        data.append(initial_hash.as_managed_buffer());
 
         let hash = self.crypto().keccak256(data);
 
         require!(
             self.crypto().verify_ed25519(
-                &raw_signature.address.as_managed_buffer(),
-                &hash.as_managed_buffer(),
-                &raw_signature.signature.as_managed_buffer(),
+                raw_signature.address.as_managed_buffer(),
+                hash.as_managed_buffer(),
+                raw_signature.signature.as_managed_buffer(),
             ),
             "Invalid signature"
         );

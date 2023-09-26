@@ -2,10 +2,10 @@
     "buildInfo": {
         "rustc": {
             "version": "1.71.0-nightly",
-            "commitHash": "a2b1646c597329d0a25efa3889b66650f65de1de",
-            "commitDate": "2023-05-25",
+            "commitHash": "7f94b314cead7059a71a265a8b64905ef2511796",
+            "commitDate": "2023-04-23",
             "channel": "Nightly",
-            "short": "rustc 1.71.0-nightly (a2b1646c5 2023-05-25)"
+            "short": "rustc 1.71.0-nightly (7f94b314c 2023-04-23)"
         },
         "contractCrate": {
             "name": "staking-bank-static-prod",
