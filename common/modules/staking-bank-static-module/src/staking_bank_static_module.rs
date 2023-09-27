@@ -22,29 +22,6 @@ pub trait StakingBankStaticModule: events::StakingBankStaticEventsModule {
         });
     }
 
-    fn remove(&self, id: ManagedAddress) {
-        require!(!self.validators(&id).is_empty(), "Validator not exists");
-
-        self.validators(&id).clear();
-
-        self.validator_removed_event(&id);
-
-        for index in 1..=self.addresses().len() {
-            if self.addresses().get(index) == id {
-                self.addresses().swap_remove(index);
-                break;
-            }
-        }
-    }
-
-    fn update(&self, id: ManagedAddress, location: ManagedBuffer) {
-        require!(!self.validators(&id).is_empty(), "Validator not exists");
-
-        self.validators(&id).update(|validator| validator.location = location);
-
-        self.validator_updated_event(&id);
-    }
-
     fn remove_all(&self) {
         for id in self.addresses().iter() {
             self.validators(&id).clear();
@@ -67,7 +44,7 @@ pub trait StakingBankStaticModule: events::StakingBankStaticEventsModule {
 
     #[view(verifyValidators)]
     fn verify_validators(&self, validators: MultiValueEncoded<ManagedAddress>) -> bool {
-        if validators.len() == 0 {
+        if validators.is_empty() {
             return false;
         }
 
@@ -77,7 +54,7 @@ pub trait StakingBankStaticModule: events::StakingBankStaticEventsModule {
             }
         }
 
-        return true;
+        true
     }
 
     #[view]

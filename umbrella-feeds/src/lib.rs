@@ -13,10 +13,13 @@ const MULTIVERSX_PREFIX: &[u8; 30] = b"\x19MultiversX Signed Message:\n32";
 #[multiversx_sc::contract]
 pub trait UmbrellaFeeds: proxy::ProxyModule {
     #[init]
-    fn init(&self, staking_bank: ManagedAddress, required_signatures: usize, decimals: u8) {
+    fn init(&self, staking_bank: ManagedAddress, required_signatures: usize, decimals: u8, chain_id: u32) {
+        require!(required_signatures > 0, "Invalid required signatures");
+
         self.staking_bank().set(staking_bank);
         self.required_signatures().set(required_signatures);
         self.decimals().set(decimals);
+        self.chain_id().set(chain_id);
     }
 
     #[endpoint]
@@ -53,7 +56,6 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
         }
     }
 
-    // TODO: No fallback mechanism was implemented currently since the contract is upgradable
     #[view(getManyPriceData)]
     fn get_many_price_data(
         &self,
@@ -124,7 +126,7 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
     fn get_price_data_by_name(&self, name: ManagedBuffer) -> PriceData<Self::Api> {
         let key = self.crypto().keccak256(name);
 
-        let prices_mapper = self.prices(&key.as_managed_buffer());
+        let prices_mapper = self.prices(key.as_managed_buffer());
 
         if prices_mapper.is_empty() {
             return PriceData {
@@ -145,7 +147,10 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
     ) -> ManagedByteArray<KECCAK256_RESULT_LEN> {
         let mut data = ManagedBuffer::new();
 
-        data.append(&self.blockchain().get_sc_address().as_managed_buffer());
+        let chain_id = self.chain_id().get();
+
+        let _ = chain_id.dep_encode(&mut data);
+        data.append(self.blockchain().get_sc_address().as_managed_buffer());
 
         for price_key in price_keys.iter() {
             data.append(&price_key);
@@ -163,7 +168,7 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
     #[view(verifySignatures)]
     fn verify_signatures(
         &self,
-        hash: &ManagedByteArray<KECCAK256_RESULT_LEN>,
+        initial_hash: &ManagedByteArray<KECCAK256_RESULT_LEN>,
         signatures: MultiValueManagedVecCounted<Signature<Self::Api>>,
     ) {
         let required_signatures = self.required_signatures().get();
@@ -176,6 +181,13 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
         let mut validators = ManagedVec::<Self::Api, ManagedAddress>::new();
 
         let signatures_vec = signatures.into_vec();
+
+        let mut data = ManagedBuffer::new();
+
+        data.append(&ManagedBuffer::from(MULTIVERSX_PREFIX));
+        data.append(initial_hash.as_managed_buffer());
+
+        let hash = self.crypto().keccak256(data);
 
         for index in 0..required_signatures {
             let raw_signature: Signature<Self::Api> = signatures_vec.get(index);
@@ -192,22 +204,14 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
 
     fn verify_signature(
         &self,
-        initial_hash: &ManagedByteArray<KECCAK256_RESULT_LEN>,
+        hash: &ManagedByteArray<KECCAK256_RESULT_LEN>,
         raw_signature: &Signature<Self::Api>,
     ) {
-        let mut data = ManagedBuffer::new();
-
-        // TODO: Is this prefix needed? And it can be moved to the initial_hash instead
-        data.append(&ManagedBuffer::from(MULTIVERSX_PREFIX));
-        data.append(&initial_hash.as_managed_buffer());
-
-        let hash = self.crypto().keccak256(data);
-
         require!(
             self.crypto().verify_ed25519(
-                &raw_signature.address.as_managed_buffer(),
-                &hash.as_managed_buffer(),
-                &raw_signature.signature.as_managed_buffer(),
+                raw_signature.address.as_managed_buffer(),
+                hash.as_managed_buffer(),
+                raw_signature.signature.as_managed_buffer(),
             ),
             "Invalid signature"
         );
@@ -234,4 +238,8 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
     #[view]
     #[storage_mapper("decimals")]
     fn decimals(&self) -> SingleValueMapper<u8>;
+
+    #[view]
+    #[storage_mapper("chain_id")]
+    fn chain_id(&self) -> SingleValueMapper<u32>;
 }

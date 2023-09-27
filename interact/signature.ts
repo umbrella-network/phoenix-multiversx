@@ -4,7 +4,7 @@ import fs from 'fs';
 import { UserSecretKey } from '@multiversx/sdk-wallet/out';
 import createKeccakHash from "keccak";
 
-export const getDataHash = (contractAddr: string, priceKeyHash, priceData: {
+export const getDataHash = (chainId: number, contractAddr: string, priceKeyHash, priceData: {
   price: BigNumber;
   hearbeat: number;
   timestamp: number
@@ -14,6 +14,7 @@ export const getDataHash = (contractAddr: string, priceKeyHash, priceData: {
   const codec = new BinaryCodec();
 
   const data = Buffer.concat([
+    codec.encodeNested(new U32Value(chainId)),
     contractAddress,
 
     // price_keys
@@ -28,13 +29,13 @@ export const getDataHash = (contractAddr: string, priceKeyHash, priceData: {
   return createKeccakHash('keccak256').update(data).digest();
 }
 
-export const generateSignature = (contractAddr: string, priceKeyRaw: string, priceData: { price: BigNumber; hearbeat: number; timestamp: number }) => {
+export const generateSignature = (chainId: number, contractAddr: string, priceKeyRaw: string, priceData: { price: BigNumber; hearbeat: number; timestamp: number }) => {
   console.log('contract addr', contractAddr);
 
   const priceKeyHash = createKeccakHash('keccak256').update(priceKeyRaw).digest('hex');
 
   // hash_data
-  let dataHash = getDataHash(contractAddr, priceKeyHash, priceData);
+  let dataHash = getDataHash(chainId, contractAddr, priceKeyHash, priceData);
 
   const file = fs.readFileSync('./alice.pem').toString();
   const privateKey = UserSecretKey.fromPem(file);

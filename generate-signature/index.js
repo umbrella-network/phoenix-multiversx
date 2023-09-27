@@ -21,6 +21,7 @@ const priceData = {
   price: new BigNumber(1000000000, 10), // 10 with 8 decimals
 };
 
+const chainId = 198003;
 // contract address: H256([0, 0, 0, 0, 0, 0, 0, 0, 251, 19, 151, 232, 34, 94, 168, 94, 15, 14, 110, 140, 123, 18, 109, 0, 22, 204, 189, 224, 230, 103, 21, 30])
 const contractAddress = Address.fromBuffer(Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 251, 19, 151, 232, 34, 94, 168, 94, 15, 14, 110, 140, 123, 18, 109, 0, 22, 204, 189, 224, 230, 103, 21, 30])).pubkey();
 
@@ -30,6 +31,7 @@ const codec = new BinaryCodec();
 
 // get_price_data_hash
 let data = Buffer.concat([
+  codec.encodeNested(new U32Value(chainId)),
   contractAddress,
 
   // price_keys

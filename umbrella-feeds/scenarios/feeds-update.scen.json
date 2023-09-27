@@ -56,7 +56,8 @@
           "storage": {
             "str:staking_bank": "sc:staking_bank_contract",
             "str:required_signatures": "1",
-            "str:decimals": "8"
+            "str:decimals": "8",
+            "str:chain_id": "198003"
           },
           "code": "file:../output/umbrella-feeds.wasm"
         },

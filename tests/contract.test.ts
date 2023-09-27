@@ -2,7 +2,6 @@ import { afterEach, assert, beforeEach, test } from "vitest";
 import { assertAccount } from "xsuite/assert";
 import { FWorld, FWorldContract, FWorldWallet } from "xsuite/world";
 import { e } from "xsuite/data";
-import { Address } from "@multiversx/sdk-core"
 import createKeccakHash from "keccak";
 import BigNumber from 'bignumber.js';
 import fs from 'fs';
@@ -15,6 +14,8 @@ let contractStakingBank: FWorldContract;
 let addressStakingBank: string;
 let contract: FWorldContract;
 let address: string;
+
+const chainId: number = 198003;
 
 beforeEach(async () => {
   fworld = await FWorld.start();
@@ -46,17 +47,19 @@ const deployContract = async (addressStakingBank: string, requiredSignatures: nu
     codeArgs: [
       e.Addr(addressStakingBank),
       e.U32(requiredSignatures),
-      e.U8(8)
+      e.U8(8),
+      e.U32(chainId),
     ]
   }));
 
   const pairs = await contract.getAccountWithPairs();
   assertAccount(pairs, {
     balance: 0n,
-    hasPairs: [
+    allPairs: [
       e.p.Mapper('staking_bank').Value(e.Addr(addressStakingBank)),
       e.p.Mapper('required_signatures').Value(e.U32(requiredSignatures)),
       e.p.Mapper('decimals').Value(e.U8(8)),
+      e.p.Mapper('chain_id').Value(e.U32(chainId)),
     ],
   });
 }
@@ -68,7 +71,7 @@ const generateSignature = (priceKeyRaw: string, priceData: {
 }, signerPem = './alice.pem') => {
   const priceKey = createKeccakHash('keccak256').update(priceKeyRaw).digest('hex');
 
-  const dataHash = getDataHash(address, priceKey, priceData);
+  const dataHash = getDataHash(chainId, address, priceKey, priceData);
 
   const file = fs.readFileSync(signerPem).toString();
   const privateKey = UserSecretKey.fromPem(file);
@@ -86,6 +89,22 @@ const generateSignature = (priceKeyRaw: string, priceData: {
 
   return { priceKey, publicKey, signature, dataHash: dataHash.toString('hex') };
 }
+
+test("Deploy invalid required signatures", async () => {
+  await deployStakingBank();
+
+  await deployer.deployContract({
+    code: "file:umbrella-feeds/output/umbrella-feeds.wasm",
+    codeMetadata: [],
+    gasLimit: 10_000_000,
+    codeArgs: [
+      e.Addr(addressStakingBank),
+      e.U32(0),
+      e.U8(8),
+      e.U32(chainId),
+    ]
+  }).assertFail({ code: 4, message: 'Invalid required signatures' });
+});
 
 test("Deploy and update valid signature", async () => {
   await deployStakingBank();
@@ -141,7 +160,7 @@ test("Deploy and update valid signature", async () => {
   const pairs = await contract.getAccountWithPairs();
   assertAccount(pairs, {
     balance: 0n,
-    hasPairs: [
+    allPairs: [
       e.p.Mapper('staking_bank').Value(e.Addr(addressStakingBank)),
       e.p.Mapper('required_signatures').Value(e.U32(1)),
       e.p.Mapper('decimals').Value(e.U8(8)),
@@ -151,6 +170,8 @@ test("Deploy and update valid signature", async () => {
         e.U32(priceData.timestamp),
         e.U(priceData.price.toNumber()),
       )),
+
+      e.p.Mapper('chain_id').Value(e.U32(chainId)),
     ],
   });
 

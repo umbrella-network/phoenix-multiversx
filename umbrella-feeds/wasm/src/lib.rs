@@ -5,9 +5,9 @@
 ////////////////////////////////////////////////////
 
 // Init:                                 1
-// Endpoints:                           14
+// Endpoints:                           15
 // Async Callback (empty):               1
-// Total number of exported functions:  16
+// Total number of exported functions:  17
 
 #![no_std]
 #![feature(lang_items)]
@@ -31,6 +31,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         prices
         required_signatures
         decimals
+        chain_id
         staking_bank
     )
 }
