@@ -8,7 +8,7 @@ pub mod registry_proxy {
     multiversx_sc::imports!();
 
     #[multiversx_sc::proxy]
-    pub trait StakingBankProxy {
+    pub trait RegistryProxy {
         #[view(getAddress)]
         fn get_address(&self, name: &ManagedBuffer) -> ManagedAddress;
     }
@@ -41,7 +41,7 @@ pub trait UmbrellaExampleContract {
     fn init(&self, registry: ManagedAddress, token_identifier: EgldOrEsdtTokenIdentifier, token_key: ManagedBuffer) {
         self.registry().set(registry);
         self.token_identifier().set(token_identifier);
-        self.token_key().set(token_key);
+        self.token_key().set(self.crypto().keccak256(token_key).as_managed_buffer());
     }
 
     #[payable("*")]
@@ -72,6 +72,8 @@ pub trait UmbrellaExampleContract {
         let external_price_data = self.get_external_price_data();
 
         require!(external_price_data.timestamp > last_collect_time, "Can not collect yet");
+
+        self.last_collect_time().set(external_price_data.timestamp);
 
         let token_identifier = self.token_identifier().get();
 
@@ -118,6 +120,7 @@ pub trait UmbrellaExampleContract {
     #[storage_mapper("token_identifier")]
     fn token_identifier(&self) -> SingleValueMapper<EgldOrEsdtTokenIdentifier>;
 
+    // stored as keccak256 hash
     #[view]
     #[storage_mapper("token_key")]
     fn token_key(&self) -> SingleValueMapper<ManagedBuffer>;
