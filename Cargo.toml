@@ -13,3 +13,7 @@ members = [
   "umbrella-feeds",
   "umbrella-feeds/meta",
 ]
+exclude = [
+  "examples/umbrella-example",
+  "examples/umbrella-example/meta"
+]
