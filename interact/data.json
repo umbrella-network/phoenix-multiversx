@@ -9,19 +9,19 @@
   },
   "abi": "offers/output/offers.abi.json",
   "stakingBankAddress": {
-    "devnet": "erd1qqqqqqqqqqqqqpgqm5pj4el09rsrdu6nq90n0krufsfxqfzpm40q6a82zr",
+    "devnet": "erd1qqqqqqqqqqqqqpgq3k6cyjem7ewz9lr72rl6cgclxz0s3vep3yjsr97u0l",
     "testnet": "",
     "mainnet": "",
     "sbx": "erd1qqqqqqqqqqqqqpgqu3hgh3s3sx7hcdakjygymr0fm9lh2qvuaczs0z2g5j"
   },
   "address": {
-    "devnet": "erd1qqqqqqqqqqqqqpgq7pmsrevyv47shxhr4nl8l59wcxjlvhjqm40qzne277",
+    "devnet": "erd1qqqqqqqqqqqqqpgqcc0zvxsdmkt08k9hn3t8ug9ue4vfcj7f3yjs6r6ve8",
     "testnet": "",
     "mainnet": "",
     "sbx": "erd1qqqqqqqqqqqqqpgqq4yes0ynatw8e6mlce8a4vt0zxwk46dwaczsznrae3"
   },
   "registryAddress": {
-    "devnet": "erd1qqqqqqqqqqqqqpgqqegeneldmj6k47un93fmxes2pg437q4rm40qdh0mmz",
+    "devnet": "erd1qqqqqqqqqqqqqpgqw38twm3g3pgy75k6lwg03s44ghvsh0kz3yjsurxxp7",
     "testnet": "",
     "mainnet": "",
     "sbx": "erd1qqqqqqqqqqqqqpgqjwx4pcmhmrd792g640yknsnsfqwtjdtaaczsj3uzys"

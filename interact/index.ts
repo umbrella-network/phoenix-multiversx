@@ -371,6 +371,14 @@ program.command("hashData").action(async () => {
 
   console.log('Hash data:', result);
   console.log('Local hash data:', localDataHash.toString('hex'));
+})
+
+program.command("ChangeOwnerAddress")
+  .argument('newOwner', 'Address of new owner in erd format')
+  .action(async (newOwner: string) => {
+
+  console.log('copy it to `Data` field in wallet:');
+  console.log(`ChangeOwnerAddress@${Address.fromBech32(newOwner).hex()}`);
 });
 
 program.parse(process.argv);
