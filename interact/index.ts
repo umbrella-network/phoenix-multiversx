@@ -373,12 +373,52 @@ program.command("hashData").action(async () => {
   console.log('Local hash data:', localDataHash.toString('hex'));
 })
 
-program.command("ChangeOwnerAddress")
+// npm run interact:devnet ChangeOwnerAddress --newOwner erd1...
+program.command("ChangeOwnerAddressData")
   .argument('newOwner', 'Address of new owner in erd format')
   .action(async (newOwner: string) => {
 
   console.log('copy it to `Data` field in wallet:');
   console.log(`ChangeOwnerAddress@${Address.fromBech32(newOwner).hex()}`);
+});
+
+/*
+npm run interact:devnet registerData --contractAddress erd1qqqqqqqqqqqqqpgqw38twm3g3pgy75k6lwg03s44ghvsh0kz3yjsurxxp7 --contractName Registry
+
+npm run interact:devnet registerData \
+--contractAddress erd1qqqqqqqqqqqqqpgq3k6cyjem7ewz9lr72rl6cgclxz0s3vep3yjsr97u0l,erd1qqqqqqqqqqqqqpgqcc0zvxsdmkt08k9hn3t8ug9ue4vfcj7f3yjs6r6ve8 \
+--contractName StakingBank,UmbrellaFeeds
+
+*/
+program.command("registerData")
+  .argument('[contractAddress]', 'comma separated contracts you want to register (erd addresses)', '')
+  .argument('[contractName]', 'Names under which it will be registered', '')
+  .action(async (addresses: string, names: string) => {
+
+    const contractAddress = addresses.split(',');
+    const contractName = names.split(',');
+
+    console.log({contractName, contractAddress});
+
+    if (contractAddress.length != contractName.length) {
+      console.error('ERROR: number of items must match');
+      return;
+    }
+
+    if (contractAddress.length == 0) {
+      console.error('ERROR: empty array');
+      return;
+    }
+
+    const data = [
+      e.U32(contractName.length).toTopHex(),
+      ...contractName.map(name => e.Bytes(Buffer.from(name, 'utf-8')).toTopHex()),
+      e.U32(contractAddress.length).toTopHex(),
+      ...contractAddress.map(addr => e.Addr(addr).toTopHex())
+    ];
+
+    console.log('copy it to `Data` field in wallet:');
+    console.log(`importAddresses@${data.join('@')}`);
 });
 
 program.parse(process.argv);
