@@ -11,6 +11,7 @@ https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy
 ```shell
 mxpy wallet new
 mxpy wallet convert --in-format=raw-mnemonic --out-format=pem --outfile=./validator.pem
+mxpy wallet convert --in-format=raw-mnemonic --out-format=keystore-mnemonic --outfile=./wallet.dev.json
 > <mnemonics><enter>
 > <ctrl+D>
 ```
