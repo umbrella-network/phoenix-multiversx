@@ -36,15 +36,18 @@ const world = World.new({
   gasPrice: 1000000000,
 });
 
-export const loadWallet = () => world.newWalletFromFile("wallet.json");
+export const loadWallet = (shard: number) => {
+  return world.newWalletFromFile(`wallets/deployer.${envChain.name()}.shard${shard}.json`);
+}
 
 const program = new Command();
 
 program.command("deploy")
   .argument('[requiredSignatures]', 'The number of required signatures', 2)
   .argument('[pricesDecimals]', 'The number of decimals', 8)
-  .action(async (requiredSignatures: number, priceDecimals: number) => {
-    const wallet = await loadWallet();
+  .argument('[shardId]', 'Shard number')
+  .action(async (requiredSignatures: number, priceDecimals: number, shardId: number) => {
+    const wallet = await loadWallet(shardId);
 
     console.log('Deploying Staking Bank contract...');
     const resultStakingBank = await wallet.deployContract({
@@ -373,14 +376,18 @@ program.command("hashData").action(async () => {
   console.log('Local hash data:', localDataHash.toString('hex'));
 })
 
-// npm run interact:devnet ChangeOwnerAddress --newOwner erd1...
+/*
+npm run interact:sbx ChangeOwnerAddressData --newOwner erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t
+ */
 program.command("ChangeOwnerAddressData")
   .argument('newOwner', 'Address of new owner in erd format')
   .action(async (newOwner: string) => {
 
   console.log('copy it to `Data` field in wallet:');
   console.log(`ChangeOwnerAddress@${Address.fromBech32(newOwner).hex()}`);
-});
+  console.log('set 6M gas limit');
+
+  });
 
 /*
 npm run interact:devnet registerData --contractAddress erd1qqqqqqqqqqqqqpgqw38twm3g3pgy75k6lwg03s44ghvsh0kz3yjsurxxp7 --contractName Registry

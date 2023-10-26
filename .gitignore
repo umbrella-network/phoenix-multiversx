@@ -11,8 +11,9 @@
 
 # VSCode
 .vscode
+.idea
 
-wallet.json
+wallets
 
 # Include ABI files in repo
 !**/output/*.abi.json
