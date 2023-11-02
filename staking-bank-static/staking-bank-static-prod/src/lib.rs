@@ -12,10 +12,14 @@ pub trait StakingBank:
     fn init(&self) {
         self.remove_all();
 
-        // TODO: Add actual addresses
-        // self.create(
-        //     ManagedAddress::from(hex!("0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1")),
-        //     ManagedBuffer::from(b"localhost")
-        // );
+        self.create(
+            ManagedAddress::from(hex!("29e0e79c3a03a4fb258b60a06bbf337dbd63a602e8832f7dc1bec9bf5dc00d83")),
+            ManagedBuffer::from(b"https://validator.umb.network/")
+        );
+
+        self.create(
+            ManagedAddress::from(hex!("40b2847674650ffeaf5e58a809a4a044c61c0b82b96a3924c83ee297f259130c")),
+            ManagedBuffer::from(b"https://validator2.umb.network/")
+        );
     }
 }
