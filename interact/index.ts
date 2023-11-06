@@ -52,6 +52,14 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
       dataJson[contract].mainnet = address;
       break;
 
+    case ChainName.devnet:
+      dataJson[contract].devnet = address;
+      break;
+
+    case ChainName.sbx:
+      dataJson[contract].sbx = address;
+      break;
+
     default: throw new Error(`[saveDeploymentResults] unknown chain name: ${envChain.name()}`);
   }
 
@@ -97,7 +105,7 @@ program.command("deploy")
     console.log('Deploying Registry contract...');
     const resultRegistry = await wallet.deployContract({
       code: data.registryCode,
-      codeMetadata: ["upgradeable"],
+      codeMetadata: [],
       gasLimit: 100_000_000,
     });
     console.log('Registry Result', resultRegistry);
@@ -123,6 +131,41 @@ program.command("deploy")
     console.log('Staking Bank Address:', resultStakingBank.address);
     console.log('Umbrella Feeds Address:', result.address);
     console.log('Registry Address', resultRegistry.address);
+  });
+
+
+program.command("upgradeRegistry")
+  .argument('[shardId]', 'Shard number')
+  .action(async (shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const dataJson = readJson<DataJson>(dataJsonFile);
+    const address = dataJson.registryAddress[envChain.name() as ChainName];
+
+    console.log('Upgrading Registry contract', address);
+    const resultRegistry = await wallet.upgradeContract({
+      callee: address,
+      code: dataJson.registryCode,
+      codeMetadata: [],
+      gasLimit: 100_000_000,
+    });
+    console.log('Registry Result', resultRegistry);
+  });
+
+program.command("upgradeBank")
+  .argument('[shardId]', 'Shard number')
+  .action(async (shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const dataJson = readJson<DataJson>(dataJsonFile);
+    const address = dataJson.stakingBankAddress[envChain.name() as ChainName];
+
+    console.log('Upgrading Staking Bank', envChain.name(),' contract', address);
+    const resultRegistry = await wallet.upgradeContract({
+      callee: address,
+      code: dataJson.stakingBankCode[envChain.name() as ChainName],
+      codeMetadata: ["upgradeable"],
+      gasLimit: 100_000_000,
+    });
+    console.log('Upgrading Staking Bank Result', resultRegistry);
   });
 
 program.command("upgrade")
