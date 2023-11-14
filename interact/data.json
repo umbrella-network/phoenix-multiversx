@@ -1,0 +1,35 @@
+{
+  "code": "file:umbrella-feeds/output/umbrella-feeds.wasm",
+  "registryCode": "file:registry/output/registry.wasm",
+  "stakingBankCode": {
+    "devnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
+    "testnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
+    "mainnet": "file:staking-bank-static/staking-bank-static-prod/output/staking-bank-static-prod.wasm",
+    "sbx": "file:staking-bank-static/staking-bank-static-sbx/output/staking-bank-static-sbx.wasm"
+  },
+  "abi": "offers/output/offers.abi.json",
+  "stakingBankAddress": {
+    "devnet": "erd1qqqqqqqqqqqqqpgq3k6cyjem7ewz9lr72rl6cgclxz0s3vep3yjsr97u0l",
+    "testnet": "",
+    "mainnet": "erd1qqqqqqqqqqqqqpgqyvywv5w2yx2cg6jf2udc2jc78sh3yw363pmsa5awet",
+    "sbx": "erd1qqqqqqqqqqqqqpgqu3hgh3s3sx7hcdakjygymr0fm9lh2qvuaczs0z2g5j"
+  },
+  "feedsAddress": {
+    "devnet": "erd1qqqqqqqqqqqqqpgqcc0zvxsdmkt08k9hn3t8ug9ue4vfcj7f3yjs6r6ve8",
+    "testnet": "",
+    "mainnet": "erd1qqqqqqqqqqqqqpgq8dac6l7gu4rv48u8h2a4w6wtmf0sgrhu3pmszmvtqs",
+    "sbx": "erd1qqqqqqqqqqqqqpgqq4yes0ynatw8e6mlce8a4vt0zxwk46dwaczsznrae3"
+  },
+  "registryAddress": {
+    "devnet": "erd1qqqqqqqqqqqqqpgqw38twm3g3pgy75k6lwg03s44ghvsh0kz3yjsurxxp7",
+    "testnet": "",
+    "mainnet": "erd1qqqqqqqqqqqqqpgqcnxl0tr9qgzcu03y9twuv3l6lmqjc5pv3pmshzr0en",
+    "sbx": "erd1qqqqqqqqqqqqqpgqjwx4pcmhmrd792g640yknsnsfqwtjdtaaczsj3uzys"
+  },
+  "chainId": {
+    "devnet": 198003,
+    "testnet": 198002,
+    "mainnet": 198001,
+    "sbx": 198003
+  }
+}

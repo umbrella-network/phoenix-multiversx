@@ -1,0 +1,132 @@
+{
+  "name": "feeds deploy test",
+  "steps": [
+    {
+      "step": "setState",
+      "accounts": {
+        "address:my_address": {
+          "nonce": "0",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "address:other_address": {
+          "nonce": "0",
+          "balance": "1,000,000",
+          "storage": {}
+        }
+      },
+      "newAddresses": [
+        {
+          "creatorAddress": "address:my_address",
+          "creatorNonce": "0",
+          "newAddress": "sc:staking_bank_contract"
+        },
+        {
+          "creatorAddress": "address:my_address",
+          "creatorNonce": "1",
+          "newAddress": "sc:feeds_contract"
+        }
+      ]
+    },
+    {
+      "step": "scDeploy",
+      "txId": "deploy",
+      "tx": {
+        "from": "address:my_address",
+        "contractCode": "file:../../staking-bank-static/staking-bank-static-local/output/staking-bank-static-local.wasm",
+        "value": "0",
+        "arguments": [],
+        "gasLimit": "50,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "status": "0",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "checkState",
+      "accounts": {
+        "address:my_address": {
+          "nonce": "1",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "address:other_address": {
+          "nonce": "0",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "sc:staking_bank_contract": {
+          "nonce": "0",
+          "balance": "0",
+          "storage": {
+            "str:validators|0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1": "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1|nested:str:localhost",
+            "str:addresses.len": "1",
+            "str:addresses.item|u32:1": "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"
+          },
+          "code": "file:../../staking-bank-static/staking-bank-static-local/output/staking-bank-static-local.wasm"
+        }
+      }
+    },
+    {
+      "step": "scDeploy",
+      "txId": "deploy",
+      "tx": {
+        "from": "address:my_address",
+        "contractCode": "file:../output/umbrella-feeds.wasm",
+        "value": "0",
+        "arguments": [
+          "sc:staking_bank_contract",
+          "u32:1",
+          "u8:8",
+          "u32:198003"
+        ],
+        "gasLimit": "50,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "status": "0",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "checkState",
+      "accounts": {
+        "address:my_address": {
+          "nonce": "2",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "address:other_address": {
+          "nonce": "0",
+          "balance": "1,000,000",
+          "storage": {}
+        },
+        "sc:feeds_contract": {
+          "nonce": "0",
+          "balance": "0",
+          "storage": {
+            "str:staking_bank": "sc:staking_bank_contract",
+            "str:required_signatures": "1",
+            "str:decimals": "8",
+            "str:chain_id": "198003"
+          },
+          "code": "file:../output/umbrella-feeds.wasm"
+        },
+        "sc:staking_bank_contract": {
+          "nonce": "0",
+          "balance": "0",
+          "storage": {
+            "str:validators|0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1": "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1|nested:str:localhost",
+            "str:addresses.len": "1",
+            "str:addresses.item|u32:1": "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"
+          },
+          "code": "file:../../staking-bank-static/staking-bank-static-local/output/staking-bank-static-local.wasm"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+[package]
+name = "umbrella-feeds"
+version = "0.0.0"
+authors = [ "you",]
+edition = "2018"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies.multiversx-sc]
+version = "0.41.3"
+features = ["esdt-token-payment-legacy-decode"]
+
+[dependencies.multiversx-sc-modules]
+version = "=0.41.3"
+
+[dev-dependencies.multiversx-sc-scenario]
+version = "0.41.3"
+
+[dev-dependencies.staking-bank-static-local]
+path = "../staking-bank-static/staking-bank-static-local"
+
+[dev-dependencies]
+num-bigint = "0.4.2"

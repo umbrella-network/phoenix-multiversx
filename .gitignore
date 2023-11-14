@@ -1,0 +1,22 @@
+# Elrond IDE
+**/node_modules
+**/output/**
+**/testnet/**
+**/wallets/**
+**/erdpy.data-storage.json
+**/*.interaction.json
+
+# Target
+/target
+
+# VSCode
+.vscode
+.idea
+
+wallets
+
+# Include ABI files in repo
+!**/output/*.abi.json
+
+*.pem
+*.env

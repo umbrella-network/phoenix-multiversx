@@ -1,0 +1,21 @@
+{
+  "name": "umbrella-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "xsuite build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "keccak": "^3.0.4",
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6",
+    "xsuite": "^0.0.34"
+  }
+}

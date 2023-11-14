@@ -1,0 +1,19 @@
+[workspace]
+members = [
+  "registry",
+  "registry/meta",
+  "staking-bank-static/staking-bank-static-dev",
+  "staking-bank-static/staking-bank-static-dev/meta",
+  "staking-bank-static/staking-bank-static-local",
+  "staking-bank-static/staking-bank-static-local/meta",
+  "staking-bank-static/staking-bank-static-prod",
+  "staking-bank-static/staking-bank-static-prod/meta",
+  "staking-bank-static/staking-bank-static-sbx",
+  "staking-bank-static/staking-bank-static-sbx/meta",
+  "umbrella-feeds",
+  "umbrella-feeds/meta",
+]
+exclude = [
+  "examples/umbrella-example",
+  "examples/umbrella-example/meta"
+]
