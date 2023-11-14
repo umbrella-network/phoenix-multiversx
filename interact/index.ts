@@ -41,6 +41,8 @@ const world = World.new({
 });
 
 export const loadWallet = (shard: number) => {
+  if (shard === undefined) throw new Error(`please provide shard ID`);
+
   return world.newWalletFromFile(`wallets/${envChain.name()}/deployer.${envChain.name()}.shard${shard}.json`);
 }
 
@@ -176,6 +178,9 @@ program.command("upgradeRegistry")
     console.log('Registry Result', resultRegistry);
   });
 
+/*
+npm run interact:devnet upgradeBank 1
+*/
 program.command("upgradeBank")
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
@@ -191,6 +196,35 @@ program.command("upgradeBank")
       gasLimit: 100_000_000,
     });
     console.log('Upgrading Staking Bank Result', resultRegistry);
+  });
+
+/*
+npm run interact:devnet upgradeFeeds 6 8 1
+*/
+program.command("upgradeFeeds")
+  .argument('[requiredSignatures]', 'The number of required signatures', 6)
+  .argument('[pricesDecimals]', 'The number of decimals', 8)
+  .argument('[shardId]', 'Shard number')
+  .action(async (requiredSignatures: number, priceDecimals: number, shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const dataJson = readJson<DataJson>(dataJsonFile);
+    const address = dataJson.feedsAddress[envChain.name() as ChainName];
+
+    console.log(`Upgrading Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
+    const result = await wallet.upgradeContract({
+      callee: address,
+      code: dataJson.code,
+      codeMetadata: ["upgradeable"],
+      gasLimit: 100_000_000,
+      codeArgs: [
+        e.Addr(envChain.select(data.stakingBankAddress)),
+        e.U32(BigInt(requiredSignatures)),
+        e.U8(BigInt(priceDecimals)),
+        e.U32(BigInt(envChain.select(data.chainId))),
+      ],
+    });
+    console.log("Umbrella Feeds Result:", result);
+    console.log("RUN `getRequiredSignatures` to confirm all look OK");
   });
 
 program.command("upgrade")
@@ -287,10 +321,31 @@ program.command("update")
   });
 
 
+/*
+npm run interact:devnet getRequiredSignatures
+*/
+program.command("getRequiredSignatures")
+  .action(async () => {
+    const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+
+    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.feedsAddress))});
+
+    const query = new Interaction(contract, new ContractFunction('required_signatures'), [])
+      .buildQuery();
+    const response = await proxy.queryContract(query);
+    const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
+
+    console.log(
+      contract.getAddress().bech32(),
+      '.required_signatures:',
+      parseInt(parsedResponse.values[0].toString('hex'), 16)
+    );
+  });
+
 program.command("getPriceDataByName")
   .argument('[name]', 'Name of price to get', 'ETH-USD')
   .action(async (name: string) => {
-    const proxy = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com');
+    const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
 
     const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.address))});
 
@@ -339,19 +394,56 @@ program.command("getPriceData")
   });
 
 
-program.command("getRegistryAddressByName")
-  .argument('name', 'Name of the address to get')
-  .action(async (name: string) => {
-    const proxy = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com');
+async function getAddressByString(name: string): Promise<string> {
+  const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+  const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.registryAddress))});
 
-    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.registryAddress))});
+  const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
+    .buildQuery();
+  const response = await proxy.queryContract(query);
+  const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
 
-    const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
-      .buildQuery();
-    const response = await proxy.queryContract(query);
-    const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
+  return Address.fromBuffer(parsedResponse.values[0]).bech32();
+}
 
-    console.log(`Registry address for ${name}`, Address.fromBuffer(parsedResponse.values[0]).bech32());
+/*
+npm run interact:mainnet checkRegisteredAddresses
+*/
+program.command("checkRegisteredAddresses")
+  .action(async () => {
+    const names = ['StakingBank', 'UmbrellaFeeds'];
+
+    const addresses = await Promise.all(names.map(name => getAddressByString(name)));
+
+    names.forEach((name, i) => {
+      console.log(`Registry address for ${name}: ${addresses[i]}`);
+    });
+  });
+
+/*
+npm run interact:mainnet printValidators
+*/
+program.command("printValidators")
+  .action(async () => {
+    const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.stakingBankAddress))});
+
+    let query = new Interaction(contract, new ContractFunction('getNumberOfValidators'), []).buildQuery();
+    let response = await proxy.queryContract(query);
+    let responseParsed = new ResultsParser().parseUntypedQueryResponse(response);
+
+    const numberOfValidators = parseInt(responseParsed.values[0].toString('hex'), 16);
+    console.log({numberOfValidators});
+
+    query = new Interaction(contract, new ContractFunction('addresses'), []).buildQuery();
+    response = await proxy.queryContract(query);
+    // const response = await proxy.queryContract(query);
+    responseParsed = new ResultsParser().parseUntypedQueryResponse(response);
+
+    const addresses = responseParsed.values.map((data) => new Address(data).bech32());
+
+      console.log('Registered addresses:');
+      console.log(addresses);
   });
 
 program.command("updateSdkCore")
