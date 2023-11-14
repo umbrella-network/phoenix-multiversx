@@ -91,7 +91,7 @@ where
     }
 
     fn do_valid_update(&mut self, rust_zero: &BigUint) {
-        self.b_mock.execute_tx(&self.owner_address, &self.contract_wrapper, &rust_zero, |sc| {
+        self.b_mock.execute_tx(&self.owner_address, &self.contract_wrapper, rust_zero, |sc| {
             let mut price_keys = MultiValueManagedVecCounted::<DebugApi, ManagedBuffer<DebugApi>>::new();
             let mut price_datas = MultiValueManagedVecCounted::<DebugApi, PriceData<DebugApi>>::new();
             let mut signatures = MultiValueManagedVecCounted::<DebugApi, Signature<DebugApi>>::new();

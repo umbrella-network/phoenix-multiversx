@@ -476,7 +476,6 @@ program.command("hashData").action(async () => {
 
 /*
 npm run interact:sbx ChangeOwnerAddressData --newOwner erd1gzeggan5v58lat67tz5qnf9qgnrpczuzh94rjfxg8m3f0ujezvxqtekfvd
-npm run interact:sbx ChangeOwnerAddressData --newOwner erd1skx07r2wurg73krngq6htmnyyg3le5uy2yd2v6wv39v2qx6f204qmjnykm
  */
 program.command("ChangeOwnerAddressData")
   .argument('newOwner', 'Address of new owner in erd format')
