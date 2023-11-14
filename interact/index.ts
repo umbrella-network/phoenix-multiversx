@@ -134,6 +134,31 @@ program.command("deploy")
   });
 
 
+program.command("importAddresses")
+  .argument('[shardId]', 'Shard number')
+  .action(async (shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const dataJson = readJson<DataJson>(dataJsonFile);
+
+    console.log('Adding UmbrellaFeeds & StakingBank addresses to Registry...');
+    const txResult = await wallet.callContract({
+      callee: dataJson.registryAddress[envChain.name() as ChainName],
+      gasLimit: 10_000_000,
+      funcName: "importAddresses",
+      funcArgs: [
+        e.U32(2),
+        e.Bytes(Buffer.from(STAKING_BANK_NAME, 'utf-8')),
+        e.Bytes(Buffer.from(UMBRELLA_FEEDS_NAME, 'utf-8')),
+
+        e.U32(2),
+        e.Addr(dataJson.stakingBankAddress[envChain.name() as ChainName]),
+        e.Addr(dataJson.feedsAddress[envChain.name() as ChainName]),
+      ]
+    });
+    console.log('Adding addresses to Registry Result', txResult);
+  });
+
+
 program.command("upgradeRegistry")
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
@@ -451,6 +476,7 @@ program.command("hashData").action(async () => {
 
 /*
 npm run interact:sbx ChangeOwnerAddressData --newOwner erd1gzeggan5v58lat67tz5qnf9qgnrpczuzh94rjfxg8m3f0ujezvxqtekfvd
+npm run interact:sbx ChangeOwnerAddressData --newOwner erd1skx07r2wurg73krngq6htmnyyg3le5uy2yd2v6wv39v2qx6f204qmjnykm
  */
 program.command("ChangeOwnerAddressData")
   .argument('newOwner', 'Address of new owner in erd format')
