@@ -90,6 +90,9 @@ program.command("deploy")
     saveDeploymentResults(ContractName.stakingBankAddress, resultStakingBank.address);
 
     console.log(`Deploying Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
+    console.log('data.chainId', data.chainId);
+    console.log('selected ID:', envChain.select(data.chainId), BigInt(envChain.select(data.chainId)));
+
     const result = await wallet.deployContract({
       code: data.code,
       codeMetadata: ["upgradeable"],
@@ -200,6 +203,7 @@ program.command("upgradeBank")
 
 /*
 npm run interact:devnet upgradeFeeds 6 8 1
+npm run interact:mainnet upgradeFeeds 6 8 1
 */
 program.command("upgradeFeeds")
   .argument('[requiredSignatures]', 'The number of required signatures', 6)
@@ -210,7 +214,11 @@ program.command("upgradeFeeds")
     const dataJson = readJson<DataJson>(dataJsonFile);
     const address = dataJson.feedsAddress[envChain.name() as ChainName];
 
+    console.log('data.chainId', data.chainId);
+    console.log('selected ID:', envChain.select(data.chainId), BigInt(envChain.select(data.chainId)));
+
     console.log(`Upgrading Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
+
     const result = await wallet.upgradeContract({
       callee: address,
       code: dataJson.code,
@@ -323,6 +331,7 @@ program.command("update")
 
 /*
 npm run interact:devnet getRequiredSignatures
+npm run interact:mainnet getRequiredSignatures
 */
 program.command("getRequiredSignatures")
   .action(async () => {
@@ -330,14 +339,24 @@ program.command("getRequiredSignatures")
 
     const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.feedsAddress))});
 
-    const query = new Interaction(contract, new ContractFunction('required_signatures'), [])
+    let query = new Interaction(contract, new ContractFunction('required_signatures'), [])
       .buildQuery();
-    const response = await proxy.queryContract(query);
-    const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
+    let response = await proxy.queryContract(query);
+    let parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
 
     console.log(
       contract.getAddress().bech32(),
       '.required_signatures:',
+      parseInt(parsedResponse.values[0].toString('hex'), 16)
+    );
+
+    query = new Interaction(contract, new ContractFunction('chain_id'), []).buildQuery();
+    response = await proxy.queryContract(query);
+    parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
+
+    console.log(
+      contract.getAddress().bech32(),
+      '.chainId:',
       parseInt(parsedResponse.values[0].toString('hex'), 16)
     );
   });

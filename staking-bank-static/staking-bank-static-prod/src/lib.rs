@@ -105,5 +105,11 @@ pub trait StakingBank:
             ManagedAddress::from(hex!("2f2c37eb5664ee3013e835f0aba26d06f267e9c13586d2dc76788aaced5d64e0")),
             ManagedBuffer::from(b"https://umbrella-node.cmt13.eu")
         );
+
+        // erd15ltypaen3k0wevpv33kydqkydad5r2fv2lxnzmapgcrqremy6gasf40y3x
+        self.create(
+            ManagedAddress::from(hex!("a7d640f7338d9eecb02c8c6c4682c46f5b41a92c57cd316fa1460601e764d23b")),
+            ManagedBuffer::from(b"https://umbnode.blockchainliverpool.com")
+        );
     }
 }
