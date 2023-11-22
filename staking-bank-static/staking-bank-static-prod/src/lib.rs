@@ -119,5 +119,11 @@ pub trait StakingBank:
             ManagedAddress::from(hex!("53a9d67f21a40eed6bfe71d7cf3119049bcf071118615543811cd6eea3d3a3c3")),
             ManagedBuffer::from(b"https://umbrella.infstones.io")
         );
+
+        // erd1qsn4nelywclhtucw8p056v97dtd3nrnvq36crwqfkkyaaemqvehqx4stq3
+        self.create(
+            ManagedAddress::from(hex!("042759e7e4763f75f30e385f4d30be6adb198e6c047581b809b589dee760666e")),
+            ManagedBuffer::from(b"https://umbrella-api.validatrium.club")
+        );
     }
 }

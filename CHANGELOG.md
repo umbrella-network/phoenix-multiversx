@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.0.4] - 2023-11-22
+### Added
+- adding last validator, all 19 in bank
+
 ## [1.0.3] - 2023-11-22
 ### Added
 - 1 external validator
