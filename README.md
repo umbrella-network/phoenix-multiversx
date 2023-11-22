@@ -99,3 +99,9 @@ self.create(
   - running `ChangeOwnerAddressData` command 
   - or use `mxpy wallet convert --in-format=raw-mnemonic --out-format=address-hex`
 - set valid URL for validator
+
+```shell
+npm run build:bank:static:prod
+npm run interact:mainnet upgradeBank 1
+npm run interact:mainnet printValidators
+```
