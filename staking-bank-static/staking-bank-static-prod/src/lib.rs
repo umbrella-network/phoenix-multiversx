@@ -12,11 +12,13 @@ pub trait StakingBank:
     fn init(&self) {
         self.remove_all();
 
+        // erd198sw08p6qwj0kfvtvzsxh0en0k7k8fszazpj7lwphmym7hwqpkps0wjqzs
         self.create(
             ManagedAddress::from(hex!("29e0e79c3a03a4fb258b60a06bbf337dbd63a602e8832f7dc1bec9bf5dc00d83")),
             ManagedBuffer::from(b"https://validator.umb.network")
         );
 
+        // erd1gzeggan5v58lat67tz5qnf9qgnrpczuzh94rjfxg8m3f0ujezvxqtekfvd
         self.create(
             ManagedAddress::from(hex!("40b2847674650ffeaf5e58a809a4a044c61c0b82b96a3924c83ee297f259130c")),
             ManagedBuffer::from(b"https://validator2.umb.network")
@@ -110,6 +112,12 @@ pub trait StakingBank:
         self.create(
             ManagedAddress::from(hex!("a7d640f7338d9eecb02c8c6c4682c46f5b41a92c57cd316fa1460601e764d23b")),
             ManagedBuffer::from(b"https://umbnode.blockchainliverpool.com")
+        );
+
+        // erd12w5avlep5s8w66l7w8tu7vgeqjdu7pc3rps42suprntwag7n50pss35n94
+        self.create(
+            ManagedAddress::from(hex!("53a9d67f21a40eed6bfe71d7cf3119049bcf071118615543811cd6eea3d3a3c3")),
+            ManagedBuffer::from(b"https://umbrella.infstones.io")
         );
     }
 }
