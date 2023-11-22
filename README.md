@@ -10,8 +10,8 @@ https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy
 
 ```shell
 mxpy wallet new
-mxpy wallet convert --in-format=raw-mnemonic --out-format=pem --outfile=./validator.prod.shard1.pem
-mxpy wallet convert --in-format=raw-mnemonic --out-format=keystore-mnemonic --outfile=./deployer.prod.shard1.json
+mxpy wallet convert --in-format=raw-mnemonic --out-format=pem --outfile=./wallets/deployer.dev.shard1.pem
+mxpy wallet convert --in-format=raw-mnemonic --out-format=keystore-mnemonic --outfile=./wallets/deployer.dev.shard1.json
 > <mnemonics><enter>
 > <ctrl+D>
 ```
@@ -99,3 +99,9 @@ self.create(
   - running `ChangeOwnerAddressData` command 
   - or use `mxpy wallet convert --in-format=raw-mnemonic --out-format=address-hex`
 - set valid URL for validator
+
+```shell
+npm run build:bank:static:prod
+npm run interact:mainnet upgradeBank 1
+npm run interact:mainnet printValidators
+```
