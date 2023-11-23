@@ -84,9 +84,9 @@ pub trait StakingBank:
             ManagedBuffer::from(b"https://umbrella-node.gateomega.com")
         );
 
-        // erd1f4nqrtkghxlvrgnc9qtusxq747evds2a4cn7rvt0slrqkq0n09fq4shurc
+        // erd1kz7ws89rr7mzrcz2xr50hu0602fj5kv77xfrrda6wgfmj938ksksqsagkh
         self.create(
-            ManagedAddress::from(hex!("4d6601aec8b9bec1a2782817c8181eafb2c6c15dae27e1b16f87c60b01f37952")),
+            ManagedAddress::from(hex!("b0bce81ca31fb621e04a30e8fbf1fa7a932a599ef19231b7ba7213b91627b42d")),
             ManagedBuffer::from(b"https://rpc.urbanhq.net")
         );
 
