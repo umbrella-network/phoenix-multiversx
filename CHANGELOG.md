@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.0.5] - 2023-11-23
+### Fixed
+- fix `https://rpc.urbanhq.net/` wallet address
+
 ## [1.0.4] - 2023-11-22
 ### Added
 - adding last validator, all 19 in bank

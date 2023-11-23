@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "scripts": {
     "build": "npm run build:feeds && npm run build:bank:static:local && npm run build:registry",
