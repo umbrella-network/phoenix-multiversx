@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.0.6] - 2023-12-05
+### Fixed
+- use `https://umbrella.validator.infstones.io/` url
+
 ## [1.0.5] - 2023-11-23
 ### Fixed
 - fix `https://rpc.urbanhq.net/` wallet address

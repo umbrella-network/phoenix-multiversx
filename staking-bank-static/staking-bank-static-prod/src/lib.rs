@@ -117,7 +117,7 @@ pub trait StakingBank:
         // erd12w5avlep5s8w66l7w8tu7vgeqjdu7pc3rps42suprntwag7n50pss35n94
         self.create(
             ManagedAddress::from(hex!("53a9d67f21a40eed6bfe71d7cf3119049bcf071118615543811cd6eea3d3a3c3")),
-            ManagedBuffer::from(b"https://umbrella.infstones.io")
+            ManagedBuffer::from(b"https://umbrella.validator.infstones.io")
         );
 
         // erd1qsn4nelywclhtucw8p056v97dtd3nrnvq36crwqfkkyaaemqvehqx4stq3
