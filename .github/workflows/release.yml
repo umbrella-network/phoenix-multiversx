@@ -10,10 +10,12 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    uses: multiversx/mx-sc-actions/.github/workflows/reproducible-build.yml@v2.3.5
-    with:
-      image_tag: v5.2.0
-      attach_to_existing_release: true
-      run:
-        apt install pkg-config
+  reproducible-build:
+    steps:
+      - run: apt install pkg-config
+
+      - name: reproducible build
+        uses: multiversx/mx-sc-actions/.github/workflows/reproducible-build.yml@v2.3.5
+        with:
+          image_tag: v5.2.0
+          attach_to_existing_release: true
