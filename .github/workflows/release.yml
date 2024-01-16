@@ -3,7 +3,9 @@ name: On release build and attach artifacts
 on:
   release:
     types: [published]
-
+  pull_request:
+    branches: [ main, develop, feature/* ]
+    
 permissions:
   contents: write
 
