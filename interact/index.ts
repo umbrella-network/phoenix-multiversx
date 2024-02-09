@@ -1,12 +1,11 @@
-import {Command} from "commander";
-import {World} from "xsuite/world";
+import { Command } from 'commander';
+import { d, e, World } from 'xsuite';
 // @ts-ignore
-import data from "./data.json";
-import {d, e} from "xsuite/data"
-import {Address, ResultsParser, SmartContract} from "@multiversx/sdk-core";
-import {ProxyNetworkProvider} from '@multiversx/sdk-network-providers/out';
+import data from './data.json';
+import { Address, ResultsParser, SmartContract } from '@multiversx/sdk-core';
+import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
 import BigNumber from 'bignumber.js';
-import {generateSignature, getDataHash} from './signature';
+import { generateSignature, getDataHash } from './signature';
 import {
   BigUIntType,
   BigUIntValue,
@@ -21,18 +20,18 @@ import {
   Transaction,
   Tuple,
   U32Type,
-  U32Value
+  U32Value,
 } from '@multiversx/sdk-core/out';
-import {Signature} from '@multiversx/sdk-core/out/signature';
+import { Signature } from '@multiversx/sdk-core/out/signature';
 import createKeccakHash from 'keccak';
 
-import {envChain} from './customEnvChain.js';
-import {readJson, saveToJson} from "./utils";
-import {ChainName, ContractName, DataJson} from "./types";
+import { envChain } from './customEnvChain.js';
+import { readJson, saveToJson } from './utils';
+import { ChainName, ContractName, DataJson } from './types';
 
-const UMBRELLA_FEEDS_NAME = "UmbrellaFeeds";
-const STAKING_BANK_NAME = "StakingBank";
-const dataJsonFile =__dirname + '/data.json';
+const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
+const STAKING_BANK_NAME = 'StakingBank';
+const dataJsonFile = __dirname + '/data.json';
 
 const world = World.new({
   proxyUrl: envChain.publicProxyUrl(),
@@ -44,12 +43,12 @@ export const loadWallet = (shard: number) => {
   if (shard === undefined) throw new Error(`please provide shard ID`);
 
   return world.newWalletFromFile(`wallets/${envChain.name()}/deployer.${envChain.name()}.shard${shard}.json`);
-}
+};
 
 function saveDeploymentResults(contract: ContractName, address: string): DataJson {
   const dataJson = readJson<DataJson>(dataJsonFile);
 
-  switch(envChain.name()) {
+  switch (envChain.name()) {
     case ChainName.mainnet:
       dataJson[contract].mainnet = address;
       break;
@@ -62,7 +61,8 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
       dataJson[contract].sbx = address;
       break;
 
-    default: throw new Error(`[saveDeploymentResults] unknown chain name: ${envChain.name()}`);
+    default:
+      throw new Error(`[saveDeploymentResults] unknown chain name: ${envChain.name()}`);
   }
 
   saveToJson(dataJsonFile, dataJson);
@@ -72,7 +72,7 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
 
 const program = new Command();
 
-program.command("deploy")
+program.command('deploy')
   .argument('[requiredSignatures]', 'The number of required signatures', 2)
   .argument('[pricesDecimals]', 'The number of decimals', 8)
   .argument('[shardId]', 'Shard number')
@@ -82,7 +82,7 @@ program.command("deploy")
     console.log('Deploying Staking Bank contract...');
     const resultStakingBank = await wallet.deployContract({
       code: envChain.select(data.stakingBankCode),
-      codeMetadata: ["upgradeable"],
+      codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
     });
     console.log('Staking Bank Result', resultStakingBank);
@@ -95,16 +95,16 @@ program.command("deploy")
 
     const result = await wallet.deployContract({
       code: data.code,
-      codeMetadata: ["upgradeable"],
+      codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
         e.Addr(resultStakingBank.address),
         e.U32(BigInt(requiredSignatures)),
         e.U8(BigInt(priceDecimals)),
         e.U32(BigInt(envChain.select(data.chainId))),
-      ]
+      ],
     });
-    console.log("Umbrella Feeds Result:", result);
+    console.log('Umbrella Feeds Result:', result);
     saveDeploymentResults(ContractName.feedsAddress, result.address);
 
     console.log('Deploying Registry contract...');
@@ -120,7 +120,7 @@ program.command("deploy")
     const txResult = await wallet.callContract({
       callee: resultRegistry.address,
       gasLimit: 10_000_000,
-      funcName: "importAddresses",
+      funcName: 'importAddresses',
       funcArgs: [
         e.U32(2),
         e.Bytes(Buffer.from(STAKING_BANK_NAME, 'utf-8')),
@@ -129,7 +129,7 @@ program.command("deploy")
         e.U32(2),
         e.Addr(resultStakingBank.address),
         e.Addr(result.address),
-      ]
+      ],
     });
     console.log('Adding addresses to Registry Result', txResult);
 
@@ -138,8 +138,7 @@ program.command("deploy")
     console.log('Registry Address', resultRegistry.address);
   });
 
-
-program.command("importAddresses")
+program.command('importAddresses')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
     const wallet = await loadWallet(shardId);
@@ -149,7 +148,7 @@ program.command("importAddresses")
     const txResult = await wallet.callContract({
       callee: dataJson.registryAddress[envChain.name() as ChainName],
       gasLimit: 10_000_000,
-      funcName: "importAddresses",
+      funcName: 'importAddresses',
       funcArgs: [
         e.U32(2),
         e.Bytes(Buffer.from(STAKING_BANK_NAME, 'utf-8')),
@@ -158,13 +157,12 @@ program.command("importAddresses")
         e.U32(2),
         e.Addr(dataJson.stakingBankAddress[envChain.name() as ChainName]),
         e.Addr(dataJson.feedsAddress[envChain.name() as ChainName]),
-      ]
+      ],
     });
     console.log('Adding addresses to Registry Result', txResult);
   });
 
-
-program.command("upgradeRegistry")
+program.command('upgradeRegistry')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
     const wallet = await loadWallet(shardId);
@@ -184,18 +182,18 @@ program.command("upgradeRegistry")
 /*
 npm run interact:devnet upgradeBank 1
 */
-program.command("upgradeBank")
+program.command('upgradeBank')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
     const wallet = await loadWallet(shardId);
     const dataJson = readJson<DataJson>(dataJsonFile);
     const address = dataJson.stakingBankAddress[envChain.name() as ChainName];
 
-    console.log('Upgrading Staking Bank', envChain.name(),' contract', address);
+    console.log('Upgrading Staking Bank', envChain.name(), ' contract', address);
     const resultRegistry = await wallet.upgradeContract({
       callee: address,
       code: dataJson.stakingBankCode[envChain.name() as ChainName],
-      codeMetadata: ["upgradeable"],
+      codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
     });
     console.log('Upgrading Staking Bank Result', resultRegistry);
@@ -205,7 +203,7 @@ program.command("upgradeBank")
 npm run interact:devnet upgradeFeeds 6 8 1
 npm run interact:mainnet upgradeFeeds 6 8 1
 */
-program.command("upgradeFeeds")
+program.command('upgradeFeeds')
   .argument('[requiredSignatures]', 'The number of required signatures', 6)
   .argument('[pricesDecimals]', 'The number of decimals', 8)
   .argument('[shardId]', 'Shard number')
@@ -222,7 +220,7 @@ program.command("upgradeFeeds")
     const result = await wallet.upgradeContract({
       callee: address,
       code: dataJson.code,
-      codeMetadata: ["upgradeable"],
+      codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
         e.Addr(envChain.select(data.stakingBankAddress)),
@@ -231,11 +229,11 @@ program.command("upgradeFeeds")
         e.U32(BigInt(envChain.select(data.chainId))),
       ],
     });
-    console.log("Umbrella Feeds Result:", result);
-    console.log("RUN `getRequiredSignatures` to confirm all look OK");
+    console.log('Umbrella Feeds Result:', result);
+    console.log('RUN `getRequiredSignatures` to confirm all look OK');
   });
 
-program.command("upgrade")
+program.command('upgrade')
   .argument('[requiredSignatures]', 'The number of required signatures', 2)
   .argument('[pricesDecimals]', 'The number of decimals', 8)
   .argument('[shardId]', 'Shard number')
@@ -246,7 +244,7 @@ program.command("upgrade")
     const resultStakingBank = await wallet.upgradeContract({
       callee: envChain.select(data.stakingBankAddress),
       code: envChain.select(data.stakingBankCode),
-      codeMetadata: ["upgradeable"],
+      codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
     });
     console.log('Staking Bank Result', resultStakingBank);
@@ -255,7 +253,7 @@ program.command("upgrade")
     const result = await wallet.upgradeContract({
       callee: envChain.select(data.address),
       code: data.code,
-      codeMetadata: ["upgradeable"],
+      codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
         e.Addr(envChain.select(data.stakingBankAddress)),
@@ -264,24 +262,24 @@ program.command("upgrade")
         e.U32(BigInt(envChain.select(data.chainId))),
       ],
     });
-    console.log("Umbrella Feeds Result:", result);
+    console.log('Umbrella Feeds Result:', result);
 
     console.log('Contract successfully upgraded!');
   });
 
-program.command("ClaimDeveloperRewards")
+program.command('ClaimDeveloperRewards')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
     const wallet = await loadWallet(shardId);
     const result = await wallet.callContract({
       callee: envChain.select(data.address),
-      funcName: "ClaimDeveloperRewards",
+      funcName: 'ClaimDeveloperRewards',
       gasLimit: 10_000_000,
     });
-    console.log("Result:", result);
+    console.log('Result:', result);
   });
 
-program.command("update")
+program.command('update')
   .argument('[hearbeat]', 'data', 0)
   .argument('[timestamp]', 'data', 1688998114)
   .argument('[price]', 'data', 1000000000)
@@ -295,11 +293,11 @@ program.command("update")
       price: new BigNumber(price, 10),
     };
 
-    const {priceKey, publicKey, signature} = generateSignature(
+    const { priceKey, publicKey, signature } = generateSignature(
       envChain.select(data.chainId),
       envChain.select(data.address),
       'ETH-USD',
-      priceData
+      priceData,
     );
 
     const tx = await wallet.callContract({
@@ -328,16 +326,15 @@ program.command("update")
     console.log('transaction', tx);
   });
 
-
 /*
 npm run interact:devnet getRequiredSignatures
 npm run interact:mainnet getRequiredSignatures
 */
-program.command("getRequiredSignatures")
+program.command('getRequiredSignatures')
   .action(async () => {
     const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
 
-    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.feedsAddress))});
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.feedsAddress)) });
 
     let query = new Interaction(contract, new ContractFunction('required_signatures'), [])
       .buildQuery();
@@ -347,7 +344,7 @@ program.command("getRequiredSignatures")
     console.log(
       contract.getAddress().bech32(),
       '.required_signatures:',
-      parseInt(parsedResponse.values[0].toString('hex'), 16)
+      parseInt(parsedResponse.values[0].toString('hex'), 16),
     );
 
     query = new Interaction(contract, new ContractFunction('chain_id'), []).buildQuery();
@@ -357,16 +354,16 @@ program.command("getRequiredSignatures")
     console.log(
       contract.getAddress().bech32(),
       '.chainId:',
-      parseInt(parsedResponse.values[0].toString('hex'), 16)
+      parseInt(parsedResponse.values[0].toString('hex'), 16),
     );
   });
 
-program.command("getPriceDataByName")
+program.command('getPriceDataByName')
   .argument('[name]', 'Name of price to get', 'ETH-USD')
   .action(async (name: string) => {
     const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
 
-    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.address))});
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.address)) });
 
     const query = new Interaction(contract, new ContractFunction('getPriceDataByName'), [new StringValue(name)])
       .buildQuery();
@@ -386,20 +383,19 @@ program.command("getPriceDataByName")
       heartbeat: (decodedAttributes.heartbeat as BigNumber).toNumber(),
       timestamp: decodedAttributes.timestamp.toNumber(),
       price: decodedAttributes.price.toNumber(),
-    }
+    };
 
     console.log('price data for ETH-USD', contractPriceData);
   });
 
-
-program.command("getPriceData")
+program.command('getPriceData')
   .argument('[name]', 'Name of price to get', 'ETH-USD')
   .action(async (name: string) => {
     const priceKey = createKeccakHash('keccak256').update(name).digest('hex');
 
-    const {returnData} = await world.query({
+    const { returnData } = await world.query({
       callee: envChain.select(data.address),
-      funcName: "getPriceData",
+      funcName: 'getPriceData',
       funcArgs: [e.Bytes(Buffer.from(priceKey, 'hex'))],
     });
 
@@ -412,10 +408,9 @@ program.command("getPriceData")
     console.log('price data for ETH-USD', contractPriceData);
   });
 
-
 async function getAddressByString(name: string): Promise<string> {
   const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
-  const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.registryAddress))});
+  const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.registryAddress)) });
 
   const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
     .buildQuery();
@@ -428,7 +423,7 @@ async function getAddressByString(name: string): Promise<string> {
 /*
 npm run interact:mainnet checkRegisteredAddresses
 */
-program.command("checkRegisteredAddresses")
+program.command('checkRegisteredAddresses')
   .action(async () => {
     const names = ['StakingBank', 'UmbrellaFeeds'];
 
@@ -442,17 +437,17 @@ program.command("checkRegisteredAddresses")
 /*
 npm run interact:mainnet printValidators
 */
-program.command("printValidators")
+program.command('printValidators')
   .action(async () => {
     const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
-    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.stakingBankAddress))});
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.stakingBankAddress)) });
 
     let query = new Interaction(contract, new ContractFunction('getNumberOfValidators'), []).buildQuery();
     let response = await proxy.queryContract(query);
     let responseParsed = new ResultsParser().parseUntypedQueryResponse(response);
 
     const numberOfValidators = parseInt(responseParsed.values[0].toString('hex'), 16);
-    console.log({numberOfValidators});
+    console.log({ numberOfValidators });
 
     query = new Interaction(contract, new ContractFunction('addresses'), []).buildQuery();
     response = await proxy.queryContract(query);
@@ -461,11 +456,11 @@ program.command("printValidators")
 
     const addresses = responseParsed.values.map((data) => new Address(data).bech32());
 
-      console.log('Registered addresses:');
-      console.log(addresses);
+    console.log('Registered addresses:');
+    console.log(addresses);
   });
 
-program.command("updateSdkCore")
+program.command('updateSdkCore')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
     const wallet = await loadWallet(shardId);
@@ -474,7 +469,7 @@ program.command("updateSdkCore")
 
     const account = await proxy.getAccount(Address.fromBech32(wallet.toString()));
 
-    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.address))});
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.address)) });
 
     const query = new Interaction(contract, new ContractFunction('getPriceDataByName'), [new StringValue('ETH-USD')])
       .buildQuery();
@@ -494,7 +489,7 @@ program.command("updateSdkCore")
       hearbeat: decodedAttributes?.hearbeat?.toNumber(),
       timestamp: decodedAttributes?.timestamp?.toNumber(),
       price: decodedAttributes?.price?.toNumber(),
-    }
+    };
 
     console.log('price data for ETH-USD', contractPriceData);
 
@@ -505,11 +500,11 @@ program.command("updateSdkCore")
       price: new BigNumber(1000000000, 10),
     };
 
-    const {priceKey, publicKey, signature} = generateSignature(
+    const { priceKey, publicKey, signature } = generateSignature(
       envChain.select(data.chainId),
       envChain.select(data.address),
       'ETH-USD',
-      priceData
+      priceData,
     );
 
     const updateInteraction = new Interaction(contract, new ContractFunction('update'), [
@@ -524,7 +519,7 @@ program.command("updateSdkCore")
       ]),
 
       new U32Value(1),
-      new BytesValue(Buffer.concat([publicKey.valueOf(), signature]))
+      new BytesValue(Buffer.concat([publicKey.valueOf(), signature])),
     ]);
 
     const transaction: Transaction = updateInteraction
@@ -547,13 +542,13 @@ program.command("updateSdkCore")
     console.log('transaction hash', hash);
   });
 
-program.command("hashData").action(async () => {
+program.command('hashData').action(async () => {
   const proxy = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com');
 
-  const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.address))});
+  const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.address)) });
 
   const priceKey = 'ETH-USD';
-  const priceKeyHash = createKeccakHash('keccak256').update(priceKey).digest('hex')
+  const priceKeyHash = createKeccakHash('keccak256').update(priceKey).digest('hex');
   const priceData = {
     hearbeat: 0,
     timestamp: 1688998115,
@@ -569,8 +564,8 @@ program.command("hashData").action(async () => {
         new U32Value(priceData.timestamp),
         new BigUIntValue(priceData.price),
       ]),
-    ])
-  ]
+    ]),
+  ];
 
   const query = new Interaction(contract, new ContractFunction('hashData'), args)
     .buildQuery();
@@ -579,16 +574,21 @@ program.command("hashData").action(async () => {
 
   const result = parsedResponse.values[0].toString('hex');
 
-  const localDataHash = getDataHash(envChain.select(data.chainId), envChain.select(data.address), priceKeyHash, priceData);
+  const localDataHash = getDataHash(
+    envChain.select(data.chainId),
+    envChain.select(data.address),
+    priceKeyHash,
+    priceData,
+  );
 
   console.log('Hash data:', result);
   console.log('Local hash data:', localDataHash.toString('hex'));
-})
+});
 
 /*
 npm run interact:sbx ChangeOwnerAddressData --newOwner erd1gzeggan5v58lat67tz5qnf9qgnrpczuzh94rjfxg8m3f0ujezvxqtekfvd
  */
-program.command("ChangeOwnerAddressData")
+program.command('ChangeOwnerAddressData')
   .argument('newOwner', 'Address of new owner in erd format')
   .action(async (newOwner: string) => {
 
@@ -606,7 +606,7 @@ npm run interact:devnet registerData \
 --contractName StakingBank,UmbrellaFeeds
 
 */
-program.command("registerData")
+program.command('registerData')
   .argument('[contractAddress]', 'comma separated contracts you want to register (erd addresses)', '')
   .argument('[contractName]', 'Names under which it will be registered', '')
   .action(async (addresses: string, names: string) => {
@@ -614,7 +614,7 @@ program.command("registerData")
     const contractAddress = addresses.split(',');
     const contractName = names.split(',');
 
-    console.log({contractName, contractAddress});
+    console.log({ contractName, contractAddress });
 
     if (contractAddress.length != contractName.length) {
       console.error('ERROR: number of items must match');
@@ -630,7 +630,7 @@ program.command("registerData")
       e.U32(contractName.length).toTopHex(),
       ...contractName.map(name => e.Bytes(Buffer.from(name, 'utf-8')).toTopHex()),
       e.U32(contractAddress.length).toTopHex(),
-      ...contractAddress.map(addr => e.Addr(addr).toTopHex())
+      ...contractAddress.map(addr => e.Addr(addr).toTopHex()),
     ];
 
     console.log('copy it to `Data` field in wallet:');

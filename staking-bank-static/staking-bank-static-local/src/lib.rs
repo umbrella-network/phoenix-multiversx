@@ -17,4 +17,9 @@ pub trait StakingBank:
             ManagedBuffer::from(b"localhost")
         );
     }
+
+    #[upgrade]
+    fn upgrade(&self) {
+        self.init();
+    }
 }

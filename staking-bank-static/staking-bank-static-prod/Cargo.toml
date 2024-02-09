@@ -9,17 +9,13 @@ publish = false
 path = "src/lib.rs"
 
 [dependencies.multiversx-sc]
-version = "0.41.3"
-features = ["esdt-token-payment-legacy-decode"]
+version = "0.47.4"
 
 [dependencies.multiversx-sc-modules]
-version = "=0.41.3"
+version = "0.47.4"
 
 [dependencies.staking-bank-static-module]
 path = "../../common/modules/staking-bank-static-module"
 
 [dev-dependencies.multiversx-sc-scenario]
-version = "0.41.3"
-
-[dev-dependencies]
-num-bigint = "0.4.2"
+version = "0.47.4"

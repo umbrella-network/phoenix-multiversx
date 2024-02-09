@@ -126,4 +126,9 @@ pub trait StakingBank:
             ManagedBuffer::from(b"https://umbrella-api.validatrium.club")
         );
     }
+
+    #[upgrade]
+    fn upgrade(&self) {
+        self.init();
+    }
 }

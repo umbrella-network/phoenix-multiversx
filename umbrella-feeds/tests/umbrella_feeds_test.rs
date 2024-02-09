@@ -228,7 +228,7 @@ fn update_invalid_signature() {
 
         sc.update(price_keys, price_datas, signatures);
     })
-        .assert_user_error("Invalid signature");
+        .assert_error(10, "invalid signature");
 }
 
 #[test]
