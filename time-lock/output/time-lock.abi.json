@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "time-lock",
             "version": "0.0.0",
-            "gitVersion": "1.0.6-2-gdd09d0e"
+            "gitVersion": "1.0.6-3-g5cf1a2d"
         },
         "framework": {
             "name": "multiversx-sc",

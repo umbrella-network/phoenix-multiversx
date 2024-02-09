@@ -74,7 +74,7 @@ pub trait TimeLock {
             .with_raw_arguments(call_data.arguments.into())
             .async_call()
             .with_callback(self.callbacks().perform_async_call_callback())
-            .call_and_exit()
+            .call_and_exit();
     }
 
     fn require_multisig(&self) {
