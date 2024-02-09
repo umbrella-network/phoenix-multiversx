@@ -2,7 +2,7 @@
   "version": "1.0.7",
   "private": true,
   "scripts": {
-    "build": "npm run build:feeds && npm run build:bank:static:local && npm run build:registry",
+    "build": "npm run build:feeds && npm run build:bank:static:local && npm run build:registry && npm run build:time-lock",
     "build:all": "npm run build:feeds && npm run build:bank:static:local && npm run build:bank:static:dev && npm run build:bank:static:sbx && npm run build:bank:static:prod && npm run build:registry",
     "build:feeds": "cd umbrella-feeds && mxpy contract build",
     "build:bank:static:local": "cd staking-bank-static/staking-bank-static-local && mxpy contract build",
@@ -10,6 +10,7 @@
     "build:bank:static:sbx": "cd staking-bank-static/staking-bank-static-sbx && mxpy contract build",
     "build:bank:static:prod": "cd staking-bank-static/staking-bank-static-prod && mxpy contract build",
     "build:registry": "cd registry && mxpy contract build",
+    "build:time-lock": "cd time-lock && mxpy contract build",
     "test": "vitest run",
     "test:contract": "cd umbrella-feeds && cargo test",
     "test:scenarios": "cd umbrella-feeds && mxpy contract test",
@@ -21,14 +22,14 @@
     "interact:sbx": "CHAIN=sbx tsx interact/index.ts"
   },
   "devDependencies": {
-    "@multiversx/sdk-core": "12.5.0",
-    "@multiversx/sdk-network-providers": "1.5.0",
-    "@multiversx/sdk-wallet": "4.2.0",
-    "@types/node": "18.16.18",
+    "@multiversx/sdk-core": "^12.5.0",
+    "@multiversx/sdk-network-providers": "^1.5.0",
+    "@multiversx/sdk-wallet": "^4.2.0",
+    "@types/node": "^18.16.18",
     "commander": "11.0.0",
-    "tsx": "3.12.7",
-    "typescript": "5.0.4",
-    "vitest": "0.33.0",
+    "tsx": "^3.12.7",
+    "typescript": "^5.0.4",
+    "vitest": "^0.33.0",
     "xsuite": "0.0.46"
   }
 }

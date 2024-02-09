@@ -1,20 +1,20 @@
 {
     "buildInfo": {
         "rustc": {
-            "version": "1.71.0-nightly",
-            "commitHash": "a2b1646c597329d0a25efa3889b66650f65de1de",
-            "commitDate": "2023-05-25",
+            "version": "1.76.0-nightly",
+            "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+            "commitDate": "2023-12-10",
             "channel": "Nightly",
-            "short": "rustc 1.71.0-nightly (a2b1646c5 2023-05-25)"
+            "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
         },
         "contractCrate": {
             "name": "umbrella-feeds",
             "version": "0.0.0",
-            "gitVersion": "1.0.0-7-g94aa929"
+            "gitVersion": "1.0.6-1-g2817819"
         },
         "framework": {
             "name": "multiversx-sc",
-            "version": "0.41.3"
+            "version": "0.47.4"
         }
     },
     "name": "UmbrellaFeeds",
@@ -41,6 +41,29 @@
     },
     "endpoints": [
         {
+            "name": "upgrade",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "staking_bank",
+                    "type": "Address"
+                },
+                {
+                    "name": "required_signatures",
+                    "type": "u32"
+                },
+                {
+                    "name": "decimals",
+                    "type": "u8"
+                },
+                {
+                    "name": "chain_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "update",
             "mutability": "mutable",
             "inputs": [
@@ -60,7 +83,8 @@
                     "multi_arg": true
                 }
             ],
-            "outputs": []
+            "outputs": [],
+            "allow_multiple_var_args": true
         },
         {
             "name": "getManyPriceData",
@@ -271,7 +295,7 @@
             ]
         }
     ],
-    "events": [],
+    "esdtAttributes": [],
     "hasCallback": false,
     "types": {
         "PriceData": {

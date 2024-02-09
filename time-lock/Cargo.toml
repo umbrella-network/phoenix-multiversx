@@ -1,12 +1,12 @@
 [package]
-name = "registry"
+name = "time-lock"
 version = "0.0.0"
-authors = [ "you",]
-edition = "2018"
+authors = ["you"]
+edition = "2021"
 publish = false
 
 [lib]
-path = "src/lib.rs"
+path = "src/time_lock.rs"
 
 [dependencies.multiversx-sc]
 version = "0.47.4"

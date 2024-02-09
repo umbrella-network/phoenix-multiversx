@@ -5,9 +5,9 @@
 # ##########################################
 
 [package]
-name = "staking-bank-static-prod-wasm"
+name = "time-lock-wasm"
 version = "0.0.0"
-edition = "2018"
+edition = "2021"
 publish = false
 
 [lib]
@@ -21,7 +21,7 @@ debug = false
 panic = "abort"
 overflow-checks = false
 
-[dependencies.staking-bank-static-prod]
+[dependencies.time-lock]
 path = ".."
 
 [dependencies.multiversx-sc-wasm-adapter]

@@ -1,30 +1,28 @@
 import { afterEach, assert, beforeEach, test } from "vitest";
-import { assertAccount } from "xsuite/assert";
-import { FWorld, FWorldContract, FWorldWallet } from "xsuite/world";
-import { e } from "xsuite/data";
+import { assertAccount, SWorld, SContract, SWallet, e } from "xsuite";
 import createKeccakHash from "keccak";
 import BigNumber from 'bignumber.js';
 import fs from 'fs';
 import { UserSecretKey } from '@multiversx/sdk-wallet/out';
 import { getDataHash } from '../interact/signature';
 
-let fworld: FWorld;
-let deployer: FWorldWallet;
-let contractStakingBank: FWorldContract;
+let world: SWorld;
+let deployer: SWallet;
+let contractStakingBank: SContract;
 let addressStakingBank: string;
-let contract: FWorldContract;
+let contract: SContract;
 let address: string;
 
 const chainId: number = 198003;
 
 beforeEach(async () => {
-  fworld = await FWorld.start();
+  world = await SWorld.start();
 
-  deployer = await fworld.createWallet({ balance: 10_000_000_000n });
+  deployer = await world.createWallet({ balance: 10_000_000_000n });
 });
 
 afterEach(() => {
-  fworld.terminate();
+  world.terminate();
 });
 
 const deployStakingBank = async (path: string = 'staking-bank-static/staking-bank-static-local/output/staking-bank-static-local.wasm') => {
@@ -52,14 +50,14 @@ const deployContract = async (addressStakingBank: string, requiredSignatures: nu
     ]
   }));
 
-  const pairs = await contract.getAccountWithPairs();
+  const pairs = await contract.getAccountWithKvs();
   assertAccount(pairs, {
     balance: 0n,
-    allPairs: [
-      e.p.Mapper('staking_bank').Value(e.Addr(addressStakingBank)),
-      e.p.Mapper('required_signatures').Value(e.U32(requiredSignatures)),
-      e.p.Mapper('decimals').Value(e.U8(8)),
-      e.p.Mapper('chain_id').Value(e.U32(chainId)),
+    allKvs: [
+      e.kvs.Mapper('staking_bank').Value(e.Addr(addressStakingBank)),
+      e.kvs.Mapper('required_signatures').Value(e.U32(requiredSignatures)),
+      e.kvs.Mapper('decimals').Value(e.U8(8)),
+      e.kvs.Mapper('chain_id').Value(e.U32(chainId)),
     ],
   });
 }
@@ -119,7 +117,7 @@ test("Deploy and update valid signature", async () => {
 
   const { priceKey, publicKey, signature, dataHash } = generateSignature('ETH-USD', priceData);
 
-  const query1 = await fworld.query({
+  const query1 = await world.query({
     callee: contract,
     funcName: 'hashData',
     funcArgs: [
@@ -157,25 +155,25 @@ test("Deploy and update valid signature", async () => {
     ],
   });
 
-  const pairs = await contract.getAccountWithPairs();
+  const pairs = await contract.getAccountWithKvs();
   assertAccount(pairs, {
     balance: 0n,
-    allPairs: [
-      e.p.Mapper('staking_bank').Value(e.Addr(addressStakingBank)),
-      e.p.Mapper('required_signatures').Value(e.U32(1)),
-      e.p.Mapper('decimals').Value(e.U8(8)),
+    allKvs: [
+      e.kvs.Mapper('staking_bank').Value(e.Addr(addressStakingBank)),
+      e.kvs.Mapper('required_signatures').Value(e.U32(1)),
+      e.kvs.Mapper('decimals').Value(e.U8(8)),
 
-      e.p.Mapper('prices', e.Buffer(Buffer.from(priceKey, 'hex'))).Value(e.Tuple(
+      e.kvs.Mapper('prices', e.Buffer(Buffer.from(priceKey, 'hex'))).Value(e.Tuple(
         e.U32(priceData.hearbeat),
         e.U32(priceData.timestamp),
         e.U(priceData.price.toNumber()),
       )),
 
-      e.p.Mapper('chain_id').Value(e.U32(chainId)),
+      e.kvs.Mapper('chain_id').Value(e.U32(chainId)),
     ],
   });
 
-  const query = await fworld.query({
+  const query = await world.query({
     callee: contract,
     funcName: 'getPriceDataByName',
     funcArgs: [e.Str('ETH-USD')],

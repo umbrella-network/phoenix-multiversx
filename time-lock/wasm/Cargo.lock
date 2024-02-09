@@ -142,25 +142,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "registry"
-version = "0.0.0"
-dependencies = [
- "multiversx-sc",
-]
-
-[[package]]
-name = "registry-wasm"
-version = "0.0.0"
-dependencies = [
- "multiversx-sc-wasm-adapter",
- "registry",
-]
-
-[[package]]
 name = "smallvec"
-version = "1.11.0"
+version = "1.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62bb4feee49fdd9f707ef802e22365a35de4b7b299de4763d44bfea899442ff9"
+checksum = "e6ecd384b10a64542d77071bd64bd7b231f4ed5940fba55e98c3de13824cf3d7"
 
 [[package]]
 name = "syn"
@@ -174,7 +159,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "time-lock"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc",
+]
+
+[[package]]
+name = "time-lock-wasm"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc-wasm-adapter",
+ "time-lock",
+]
+
+[[package]]
 name = "unicode-ident"
-version = "1.0.10"
+version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22049a19f4a68748a168c0fc439f9516686aa045927ff767eca0a85101fb6e73"
+checksum = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b"
