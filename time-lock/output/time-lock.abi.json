@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "time-lock",
             "version": "0.0.0",
-            "gitVersion": "1.0.6-1-g2817819"
+            "gitVersion": "1.0.6-2-gdd09d0e"
         },
         "framework": {
             "name": "multiversx-sc",
@@ -19,18 +19,154 @@
     },
     "name": "TimeLock",
     "constructor": {
-        "inputs": [],
+        "inputs": [
+            {
+                "name": "time_lock_period",
+                "type": "u64"
+            },
+            {
+                "name": "multisig_address",
+                "type": "Address"
+            }
+        ],
         "outputs": []
     },
     "endpoints": [
         {
             "name": "upgrade",
             "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "time_lock_period",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "proposeCall",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "to",
+                    "type": "Address"
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "function_call",
+                    "type": "variadic<bytes>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "discardLastCall",
+            "mutability": "mutable",
             "inputs": [],
             "outputs": []
+        },
+        {
+            "name": "discardNextCall",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "performNextCall",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "getTimeLockPeriod",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "getMultisigAddress",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getPendingCallsFullInfo",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<CallData>",
+                    "multi_result": true
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "identifier": "asyncCallSuccess",
+            "inputs": [
+                {
+                    "name": "results",
+                    "type": "variadic<bytes>",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "asyncCallError",
+            "inputs": [
+                {
+                    "name": "err_code",
+                    "type": "u32",
+                    "indexed": true
+                },
+                {
+                    "name": "err_message",
+                    "type": "bytes",
+                    "indexed": true
+                }
+            ]
         }
     ],
     "esdtAttributes": [],
-    "hasCallback": false,
-    "types": {}
+    "hasCallback": true,
+    "types": {
+        "CallData": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "Address"
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "endpoint_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "arguments",
+                    "type": "List<bytes>"
+                },
+                {
+                    "name": "perform_after_timestamp",
+                    "type": "u64"
+                }
+            ]
+        }
+    }
 }

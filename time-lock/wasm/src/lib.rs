@@ -5,9 +5,9 @@
 ////////////////////////////////////////////////////
 
 // Init:                                 1
-// Endpoints:                            1
-// Async Callback (empty):               1
-// Total number of exported functions:   3
+// Endpoints:                            8
+// Async Callback:                       1
+// Total number of exported functions:  10
 
 #![no_std]
 #![allow(internal_features)]
@@ -21,7 +21,14 @@ multiversx_sc_wasm_adapter::endpoints! {
     (
         init => init
         upgrade => upgrade
+        proposeCall => propose_call
+        discardLastCall => discard_last_call
+        discardNextCall => discard_next_call
+        performNextCall => perform_next_call
+        getTimeLockPeriod => time_lock_period
+        getMultisigAddress => multisig_address
+        getPendingCallsFullInfo => call_data_mapper
     )
 }
 
-multiversx_sc_wasm_adapter::async_callback_empty! {}
+multiversx_sc_wasm_adapter::async_callback! { time_lock }
