@@ -5,9 +5,9 @@
 ////////////////////////////////////////////////////
 
 // Init:                                 1
-// Endpoints:                            8
+// Endpoints:                            7
 // Async Callback:                       1
-// Total number of exported functions:  10
+// Total number of exported functions:   9
 
 #![no_std]
 #![allow(internal_features)]
@@ -22,8 +22,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         init => init
         upgrade => upgrade
         proposeCall => propose_call
-        discardLastCall => discard_last_call
-        discardNextCall => discard_next_call
+        discardCall => discard_call
         performNextCall => perform_next_call
         getTimeLockPeriod => time_lock_period
         getMultisigAddress => multisig_address

@@ -173,11 +173,11 @@ test('Propose call', async () => {
   });
 });
 
-test('Discard last call', async () => {
+test('Discard call', async () => {
   await deployer.callContract({
     callee: contract,
     gasLimit: 10_000_000,
-    funcName: 'discardLastCall',
+    funcName: 'discardCall',
     funcArgs: [],
   }).assertFail({ code: 4, message: 'Only multisig can call this' });
 
@@ -208,7 +208,7 @@ test('Discard last call', async () => {
   await multisigMock.callContract({
     callee: contract,
     gasLimit: 10_000_000,
-    funcName: 'discardLastCall',
+    funcName: 'discardCall',
     funcArgs: [],
   });
 
@@ -232,72 +232,6 @@ test('Discard last call', async () => {
         contract,
         e.U(0),
         e.Str('first'),
-        e.List(),
-        e.U64(100),
-      )),
-    ],
-  });
-});
-
-test('Discard next call', async () => {
-  await deployer.callContract({
-    callee: contract,
-    gasLimit: 10_000_000,
-    funcName: 'discardNextCall',
-    funcArgs: [],
-  }).assertFail({ code: 4, message: 'Only multisig can call this' });
-
-  // Propose two calls first
-  await multisigMock.callContract({
-    callee: contract,
-    gasLimit: 10_000_000,
-    funcName: 'proposeCall',
-    funcArgs: [
-      contract,
-      e.U(0),
-      e.Str('first'),
-    ],
-  });
-
-  await multisigMock.callContract({
-    callee: contract,
-    gasLimit: 10_000_000,
-    funcName: 'proposeCall',
-    funcArgs: [
-      contract,
-      e.U(0),
-      e.Str('second'),
-    ],
-  });
-
-  // Then discard last
-  await multisigMock.callContract({
-    callee: contract,
-    gasLimit: 10_000_000,
-    funcName: 'discardNextCall',
-    funcArgs: [],
-  });
-
-  assertAccount(await contract.getAccountWithKvs(), {
-    balance: 0n,
-    allKvs: [
-      e.kvs.Mapper('time_lock_period').Value(e.U64(100)),
-      e.kvs.Mapper('multisig_address').Value(multisigMock),
-
-      e.kvs.Mapper('call_data_mapper.info').Value(e.Tuple(
-        e.U32(1),
-        e.U32(2),
-        e.U32(2),
-        e.U32(2),
-      )),
-      e.kvs.Mapper('call_data_mapper.node_links', e.U32(2)).Value(e.Tuple(
-        e.U32(0),
-        e.U32(0),
-      )),
-      e.kvs.Mapper('call_data_mapper.value', e.U32(2)).Value(e.Tuple(
-        contract,
-        e.U(0),
-        e.Str('second'),
         e.List(),
         e.U64(100),
       )),
