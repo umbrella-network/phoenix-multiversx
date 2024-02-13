@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "time-lock",
             "version": "0.0.0",
-            "gitVersion": "1.0.6-3-g5cf1a2d"
+            "gitVersion": "1.0.6-4-g4a61105"
         },
         "framework": {
             "name": "multiversx-sc",
@@ -64,13 +64,7 @@
             "outputs": []
         },
         {
-            "name": "discardLastCall",
-            "mutability": "mutable",
-            "inputs": [],
-            "outputs": []
-        },
-        {
-            "name": "discardNextCall",
+            "name": "discardCall",
             "mutability": "mutable",
             "inputs": [],
             "outputs": []

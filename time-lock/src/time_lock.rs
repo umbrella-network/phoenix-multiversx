@@ -41,18 +41,11 @@ pub trait TimeLock {
         self.call_data_mapper().push_back(call_data);
     }
 
-    #[endpoint(discardLastCall)]
-    fn discard_last_call(&self) {
+    #[endpoint(discardCall)]
+    fn discard_call(&self) {
         self.require_multisig();
 
         self.call_data_mapper().pop_back();
-    }
-
-    #[endpoint(discardNextCall)]
-    fn discard_next_call(&self) {
-        self.require_multisig();
-
-        self.call_data_mapper().pop_front();
     }
 
     #[endpoint(performNextCall)]
