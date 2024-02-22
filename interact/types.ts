@@ -9,11 +9,13 @@ export enum ContractName {
   stakingBankAddress = "stakingBankAddress",
   feedsAddress = "feedsAddress",
   registryAddress = "registryAddress",
+  timeLockAddress = "timeLockAddress",
 }
 
 export type DataJson = {
   code: string;
   registryCode: string;
+  timeLockCode: string;
   stakingBankCode: {
     devnet: string;
     testnet: string;
@@ -34,6 +36,12 @@ export type DataJson = {
     sbx: string;
   },
   registryAddress: {
+    devnet: string;
+    testnet: string;
+    mainnet: string;
+    sbx: string;
+  },
+  timeLockAddress: {
     devnet: string;
     testnet: string;
     mainnet: string;

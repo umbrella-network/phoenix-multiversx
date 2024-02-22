@@ -1,6 +1,7 @@
 {
   "code": "file:umbrella-feeds/output/umbrella-feeds.wasm",
   "registryCode": "file:registry/output/registry.wasm",
+  "timeLockCode": "file:time-lock/output/time-lock.wasm",
   "stakingBankCode": {
     "devnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
     "testnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
@@ -25,6 +26,12 @@
     "testnet": "",
     "mainnet": "erd1qqqqqqqqqqqqqpgqcnxl0tr9qgzcu03y9twuv3l6lmqjc5pv3pmshzr0en",
     "sbx": "erd1qqqqqqqqqqqqqpgq263vkz3vlzt2lut8cv9mct8ny2s6j42zen6s3amhgh"
+  },
+  "timeLockAddress": {
+    "devnet": "",
+    "testnet": "",
+    "mainnet": "",
+    "sbx": ""
   },
   "chainId": {
     "devnet": 198003,
