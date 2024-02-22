@@ -138,6 +138,41 @@ program.command('deploy')
     console.log('Registry Address', resultRegistry.address);
   });
 
+program.command('deployTimeLock')
+  .argument('[timeLockPeriod]', 'The time lock period in seconds', 2)
+  .argument('[multisigAddress]', 'The address of the multisig', 8)
+  .argument('[shardId]', 'Shard number')
+  .action(async (timeLockPeriod: number, multisigAddress: string, shardId: number) => {
+    const wallet = await loadWallet(shardId);
+
+    console.log('Deploying Time Lock contract...');
+    const resultTimeLock = await wallet.deployContract({
+      code: data.timeLockCode,
+      codeMetadata: ['upgradeable'],
+      gasLimit: 100_000_000,
+      codeArgs: [
+        e.U64(BigInt(timeLockPeriod)),
+        e.Addr(multisigAddress),
+      ],
+    });
+    console.log('Time Lock Result', resultTimeLock);
+
+    saveDeploymentResults(ContractName.timeLockAddress, resultTimeLock.address);
+
+    console.log('Changing owner of time lock contract to itself...');
+    const txResult = await wallet.callContract({
+      callee: resultTimeLock.address,
+      gasLimit: 10_000_000,
+      funcName: 'ChangeOwnerAddress',
+      funcArgs: [
+        e.Addr(resultTimeLock.address),
+      ],
+    });
+    console.log('Changed owner of time lock contract', txResult);
+
+    console.log('Time Lock Address:', resultTimeLock.address);
+  });
+
 program.command('importAddresses')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
@@ -635,6 +670,26 @@ program.command('registerData')
 
     console.log('copy it to `Data` field in wallet:');
     console.log(`importAddresses@${data.join('@')}`);
+  });
+
+/*
+npm run interact:sbx ProposeChangeOwnerAddressData \
+--contractAddress CONTRACT_ADDRESS
+--newOwner NEW_OWNER_ADDRESS
+ */
+program.command('ProposeChangeOwnerAddressData')
+  .argument('contractAddress', 'Address of contract in erd format')
+  .argument('newOwner', 'Address of new owner in erd format')
+  .action(async (contractAddress: string, newOwner: string) => {
+
+    console.log('copy it to `Data` field in wallet and send to Multisig Contract:');
+    console.log(`proposeAsyncCall@${
+        Address.fromBech32(contractAddress).hex()
+      }@@${e.Str('ChangeOwnerAddress').toTopHex()}@${
+        Address.fromBech32(newOwner).hex()}`,
+    );
+    console.log('set 15M gas limit');
+
   });
 
 program.parse(process.argv);
