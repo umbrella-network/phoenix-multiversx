@@ -4,12 +4,30 @@ on:
   release:
     types: [published]
 
+  pull_request:
+    branches: [ main, release/*, hotfix/* ]
+
 permissions:
   contents: write
 
 jobs:
-  build:
-    uses: multiversx/mx-sc-actions/.github/workflows/reproducible-build.yml@v2.3.1
+  build_registry:
+    uses: multiversx/mx-sc-actions/.github/workflows/reproducible-build.yml@v2.3.5
     with:
       image_tag: v5.2.0
       attach_to_existing_release: true
+      contract_name: registry
+
+  build_bank:
+    uses: multiversx/mx-sc-actions/.github/workflows/reproducible-build.yml@v2.3.5
+    with:
+      image_tag: v5.2.0
+      attach_to_existing_release: true
+      contract_name: staking-bank-static
+
+  build_feeds:
+    uses: multiversx/mx-sc-actions/.github/workflows/reproducible-build.yml@v2.3.5
+    with:
+      image_tag: v5.2.0
+      attach_to_existing_release: true
+      contract_name: umbrella-feeds
