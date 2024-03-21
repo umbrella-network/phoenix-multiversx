@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.0.7] - 2024-03-21
+### Fixed
+- create reproducible builds for each contract separately
+
 ## [1.0.6] - 2023-12-05
 ### Fixed
 - use `https://umbrella.validator.infstones.io/` url
