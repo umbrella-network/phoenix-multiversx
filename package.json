@@ -1,5 +1,5 @@
 {
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "scripts": {
     "build": "npm run build:feeds && npm run build:bank:static:local && npm run build:registry",
@@ -21,14 +21,14 @@
     "interact:sbx": "CHAIN=sbx tsx interact/index.ts"
   },
   "devDependencies": {
-    "@multiversx/sdk-core": "^12.5.0",
-    "@multiversx/sdk-network-providers": "^1.5.0",
-    "@multiversx/sdk-wallet": "^4.2.0",
-    "@types/node": "^18.16.18",
+    "@multiversx/sdk-core": "12.5.0",
+    "@multiversx/sdk-network-providers": "1.5.0",
+    "@multiversx/sdk-wallet": "4.2.0",
+    "@types/node": "18.16.18",
     "commander": "11.0.0",
-    "tsx": "^3.12.7",
-    "typescript": "^5.0.4",
-    "vitest": "^0.33.0",
-    "xsuite": "0.0.29"
+    "tsx": "3.12.7",
+    "typescript": "5.0.4",
+    "vitest": "0.33.0",
+    "xsuite": "0.0.46"
   }
 }
