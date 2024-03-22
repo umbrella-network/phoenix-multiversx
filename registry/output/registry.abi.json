@@ -1,20 +1,20 @@
 {
     "buildInfo": {
         "rustc": {
-            "version": "1.71.0-nightly",
-            "commitHash": "a2b1646c597329d0a25efa3889b66650f65de1de",
-            "commitDate": "2023-05-25",
+            "version": "1.76.0-nightly",
+            "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+            "commitDate": "2023-12-10",
             "channel": "Nightly",
-            "short": "rustc 1.71.0-nightly (a2b1646c5 2023-05-25)"
+            "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
         },
         "contractCrate": {
             "name": "registry",
             "version": "0.0.0",
-            "gitVersion": "1.0.0-7-g94aa929"
+            "gitVersion": "1.0.6-4-g4a61105"
         },
         "framework": {
             "name": "multiversx-sc",
-            "version": "0.41.3"
+            "version": "0.47.4"
         }
     },
     "name": "Registry",
@@ -23,6 +23,12 @@
         "outputs": []
     },
     "endpoints": [
+        {
+            "name": "upgrade",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
         {
             "name": "importAddresses",
             "onlyOwner": true,
@@ -39,7 +45,8 @@
                     "multi_arg": true
                 }
             ],
-            "outputs": []
+            "outputs": [],
+            "allow_multiple_var_args": true
         },
         {
             "name": "requireAndGetAddress",
@@ -103,6 +110,7 @@
             ]
         }
     ],
+    "esdtAttributes": [],
     "hasCallback": false,
     "types": {}
 }

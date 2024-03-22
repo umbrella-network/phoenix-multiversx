@@ -12,6 +12,8 @@ members = [
   "staking-bank-static/staking-bank-static-sbx/meta",
   "umbrella-feeds",
   "umbrella-feeds/meta",
+  "time-lock",
+  "time-lock/meta"
 ]
 exclude = [
   "examples/umbrella-example",

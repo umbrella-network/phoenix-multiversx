@@ -1,0 +1,15 @@
+[package]
+name = "time-lock"
+version = "0.0.0"
+authors = ["you"]
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/time_lock.rs"
+
+[dependencies.multiversx-sc]
+version = "0.47.4"
+
+[dev-dependencies.multiversx-sc-scenario]
+version = "0.47.4"

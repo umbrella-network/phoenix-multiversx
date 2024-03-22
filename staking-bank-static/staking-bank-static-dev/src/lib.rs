@@ -21,4 +21,9 @@ pub trait StakingBank:
             ManagedBuffer::from(b"https://validator2.dev.umb.network/")
         );
     }
+
+    #[upgrade]
+    fn upgrade(&self) {
+        self.init();
+    }
 }

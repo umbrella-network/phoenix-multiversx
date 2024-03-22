@@ -7,6 +7,10 @@ pub trait Registry {
     #[init]
     fn init(&self) {}
 
+    #[upgrade]
+    fn upgrade(&self) {}
+
+    #[allow_multiple_var_args]
     #[only_owner]
     #[endpoint(importAddresses)]
     fn import_addresses(

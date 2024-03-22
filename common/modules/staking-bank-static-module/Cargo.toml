@@ -9,5 +9,4 @@ path = "src/staking_bank_static_module.rs"
 
 
 [dependencies.multiversx-sc]
-version = "=0.41.3"
-features = ["esdt-token-payment-legacy-decode"]
+version = "0.47.4"

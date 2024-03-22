@@ -22,6 +22,12 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
         self.chain_id().set(chain_id);
     }
 
+    #[upgrade]
+    fn upgrade(&self, staking_bank: ManagedAddress, required_signatures: usize, decimals: u8, chain_id: u32) {
+        self.init(staking_bank, required_signatures, decimals, chain_id);
+    }
+
+    #[allow_multiple_var_args]
     #[endpoint]
     fn update(
         &self,
@@ -207,13 +213,10 @@ pub trait UmbrellaFeeds: proxy::ProxyModule {
         hash: &ManagedByteArray<KECCAK256_RESULT_LEN>,
         raw_signature: &Signature<Self::Api>,
     ) {
-        require!(
-            self.crypto().verify_ed25519(
-                raw_signature.address.as_managed_buffer(),
-                hash.as_managed_buffer(),
-                raw_signature.signature.as_managed_buffer(),
-            ),
-            "Invalid signature"
+        self.crypto().verify_ed25519(
+            raw_signature.address.as_managed_buffer(),
+            hash.as_managed_buffer(),
+            raw_signature.signature.as_managed_buffer(),
         );
     }
 
