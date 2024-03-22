@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.1.1] - 2024-03-22
+### Fixed
+- build artefacts in separation for ech contract
+
 ## [1.1.0] - 2024-03-21
+### Added
 - timelock
 
 ## [1.0.7] - 2024-03-21
