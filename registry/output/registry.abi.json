@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "registry",
             "version": "0.0.0",
-            "gitVersion": "1.0.6-4-g4a61105"
+            "gitVersion": "1.0.7-15-g95a25c1"
         },
         "framework": {
             "name": "multiversx-sc",
