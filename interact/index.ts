@@ -88,7 +88,7 @@ program.command('deploy')
     console.log('selected ID:', envChain.select(data.chainId), BigInt(envChain.select(data.chainId)));
 
     const result = await wallet.deployContract({
-      code: data.code,
+      code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -103,7 +103,7 @@ program.command('deploy')
 
     console.log('Deploying Registry contract...');
     const resultRegistry = await wallet.deployContract({
-      code: data.registryCode,
+      code: envChain.select(data.registryCode),
       codeMetadata: [],
       gasLimit: 100_000_000,
     });
@@ -141,7 +141,7 @@ program.command('deployTimeLock')
 
     console.log('Deploying Time Lock contract...');
     const resultTimeLock = await wallet.deployContract({
-      code: data.timeLockCode,
+      code: envChain.select(data.timeLockCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -231,7 +231,7 @@ program.command('upgradeRegistry')
     console.log('Upgrading Registry contract', address);
     const resultRegistry = await wallet.upgradeContract({
       callee: address,
-      code: dataJson.registryCode,
+      code: envChain.select(dataJson.registryCode),
       codeMetadata: [],
       gasLimit: 100_000_000,
     });
@@ -278,7 +278,7 @@ program.command('upgradeFeeds')
 
     const result = await wallet.upgradeContract({
       callee: address,
-      code: dataJson.code,
+      code: envChain.select(dataJson.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -311,7 +311,7 @@ program.command('upgrade')
     console.log(`Upgrading Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
     const result = await wallet.upgradeContract({
       callee: envChain.select(data.address),
-      code: data.code,
+      code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [

@@ -13,9 +13,24 @@ export enum ContractName {
 }
 
 export type DataJson = {
-  code: string;
-  registryCode: string;
-  timeLockCode: string;
+  feedCode: {
+    devnet: string;
+    testnet: string;
+    mainnet: string;
+    sbx: string;
+  },
+  registryCode: {
+    devnet: string;
+    testnet: string;
+    mainnet: string;
+    sbx: string;
+  },
+  timeLockCode: {
+    devnet: string;
+    testnet: string;
+    mainnet: string;
+    sbx: string;
+  },
   stakingBankCode: {
     devnet: string;
     testnet: string;
