@@ -7,20 +7,21 @@ import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
 import BigNumber from 'bignumber.js';
 import { generateSignature, getDataHash } from './signature';
 import {
+  AbiRegistry, AddressValue,
   BigUIntType,
   BigUIntValue,
   BinaryCodec,
   BytesValue,
-  ContractFunction,
+  ContractFunction, Field,
   FieldDefinition,
   Interaction,
-  List,
-  StringValue,
+  List, ListType, NumericalValue,
+  StringValue, Struct,
   StructType,
   Transaction,
   Tuple,
   U32Type,
-  U32Value,
+  U32Value, VariadicValue,
 } from '@multiversx/sdk-core/out';
 import { Signature } from '@multiversx/sdk-core/out/signature';
 import createKeccakHash from 'keccak';
@@ -28,6 +29,7 @@ import createKeccakHash from 'keccak';
 import { envChain } from './customEnvChain.js';
 import { readJson, saveToJson } from './utils';
 import { ChainName, ContractName, DataJson } from './types';
+import TimeLockAbi from '../time-lock/output/time-lock.abi.json';
 
 const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
 const STAKING_BANK_NAME = 'StakingBank';
@@ -444,27 +446,34 @@ program.command('getPriceData')
   });
 
 async function getAddressByString(name: string): Promise<string> {
-  const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
-  const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.registryAddress)) });
+  try {
+    const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+    const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.registryAddress))});
 
-  const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
-    .buildQuery();
-  const response = await proxy.queryContract(query);
-  const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
+    const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
+      .buildQuery();
+    const response = await proxy.queryContract(query);
+    const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
 
-  return Address.fromBuffer(parsedResponse.values[0]).bech32();
+    return Address.fromBuffer(parsedResponse.values[0]).bech32();
+  } catch (e) {
+    console.log(e.message);
+    return 'unknown';
+  }
 }
 
 /*
 npm run interact:mainnet checkRegisteredAddresses
+npm run interact:devnet checkRegisteredAddresses
 */
 program.command('checkRegisteredAddresses')
-  .action(async () => {
-    const names = ['StakingBank', 'UmbrellaFeeds'];
+  .argument('[names]', 'Names to check eg: a,b', '')
+  .action(async (names: string) => {
+    const toCheck = [...(names.split(',')), 'StakingBank', 'UmbrellaFeeds'].filter(n => !!n);
 
-    const addresses = await Promise.all(names.map(name => getAddressByString(name)));
+    const addresses = await Promise.all(toCheck.map(name => getAddressByString(name)));
 
-    names.forEach((name, i) => {
+    toCheck.forEach((name, i) => {
       console.log(`Registry address for ${name}: ${addresses[i]}`);
     });
   });
@@ -690,6 +699,137 @@ program.command('ProposeChangeOwnerAddressData')
     );
     console.log('set 15M gas limit');
 
+  });
+
+
+async function readFromTimelock(proxy: ProxyNetworkProvider, contract: SmartContract,  method: string): Promise<Buffer[]> {
+  let query = new Interaction(contract, new ContractFunction(method), []).buildQuery();
+  let response = await proxy.queryContract(query);
+  let responseParsed = new ResultsParser().parseUntypedQueryResponse(response);
+  return responseParsed.values;
+}
+
+/*
+npm run interact:devnet performNextCall --shardId 1
+*/
+program.command('performNextCall')
+  .argument('[shardId]', 'Shard number')
+  .action(async (shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.timeLockAddress)) });
+
+    const tx = await wallet.callContract({
+      callee: contract.getAddress().bech32(),
+      gasLimit: 10_000_000,
+      funcName: 'performNextCall',
+      funcArgs: []
+    });
+
+    console.log('explorerUrl', tx.tx.explorerUrl);
+    console.log('status', tx.tx.status);
+
+    if (tx.tx.status != 'success') {
+      console.log(tx);
+    }
+  });
+
+
+/*
+npm run interact:devnet timelockTest --shardId 1
+*/
+program.command('timelockTest')
+  .argument('[shardId]', 'Shard number')
+  .action(async (shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.timeLockAddress)) });
+    const registry = new SmartContract({ address: Address.fromBech32(envChain.select(data.registryAddress)) });
+
+    const tx = await wallet.callContract({
+      callee: contract.getAddress().bech32(),
+      gasLimit: 10_000_000,
+      funcName: 'proposeCall',
+      funcArgs: [
+        e.Addr(registry.getAddress().bech32()),
+        e.U(0),
+        e.Str('importAddresses'),
+        e.U32(1),
+        e.Bytes(Buffer.from('deployerAddress2', 'utf-8')),
+        e.U32(1),
+        e.Addr('erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m'),
+      ],
+    });
+
+    console.log('explorerUrl', tx.tx.explorerUrl);
+    console.log('status', tx.tx.status);
+
+    if (tx.tx.status != 'success') {
+      console.log(tx);
+    }
+  });
+
+/*
+npm run interact:devnet printTimelockState
+*/
+program.command('printTimelockState')
+  .action(async () => {
+    const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+    const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.timeLockAddress)) });
+
+    console.log('deployerAddress:', await getAddressByString('deployerAddress'));
+
+    const timeLockPeriod = parseInt((await readFromTimelock(proxy, contract, 'getTimeLockPeriod'))[0].toString('hex'), 16);
+    const multisigAddress =  new Address((await readFromTimelock(proxy, contract, 'getMultisigAddress'))[0]).bech32();
+    const pendingCalls = await readFromTimelock(proxy, contract, 'getPendingCallsFullInfo');
+
+    console.log({
+      timeLockPeriod,
+      multisigAddress,
+      pendingCalls: pendingCalls.length
+    });
+  });
+
+/*
+npm run interact:devnet timelockPendingCalls
+*/
+program.command('timelockPendingCalls')
+  .action(async () => {
+    const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+    const timelock = new SmartContract({ address: Address.fromBech32(envChain.select(data.timeLockAddress)) });
+
+    const query = new Interaction(timelock, new ContractFunction('getPendingCallsFullInfo'), []).buildQuery();
+    const response = await proxy.queryContract(query);
+
+    const endpointDefinition = AbiRegistry.create(TimeLockAbi).getEndpoint('getPendingCallsFullInfo');
+    const parsedResponse = new ResultsParser().parseQueryResponse(response, endpointDefinition);
+
+
+    const items = (parsedResponse.values as VariadicValue[])[0].getItems() as Struct[];
+
+    const calls = items.map((values, i) => {
+      const fields = values.getFields();
+      // console.log(fields);
+      // return '';
+
+      const [to, egld_amount, endpoint_name, args, perform_after_timestamp ] =
+        fields as unknown as [AddressValue, NumericalValue, StringValue, ListType, NumericalValue];
+
+      const performAfterTimestamp = parseInt(perform_after_timestamp.value.toString(10));
+
+      return {
+        to: new Address(to.value.value).bech32(),
+        performAfterTimestamp,
+        readyToExecute: performAfterTimestamp < Date.now() / 1000,
+        endpoint_name: Buffer.from(endpoint_name.value.value).toString('utf-8'),
+        egld_amount: BigInt(new BigNumber(egld_amount.value).toFixed()),
+        args: JSON.stringify(args.value),
+        // args2: Buffer.from(args.value.value).toString('hex'),
+      };
+    });
+
+    console.log('deployerAddress:', await getAddressByString('deployerAddress'));
+    console.log('deployerAddress2:', await getAddressByString('deployerAddress2'));
+
+    console.log(calls);
   });
 
 program.parse(process.argv);
