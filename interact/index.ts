@@ -175,6 +175,31 @@ program.command('deployTimeLock')
     console.log('Time Lock Address:', resultTimeLock.address);
   });
 
+
+/*
+npm run interact:devnet changeOwner
+change registry owner to timelock:
+npm run interact:devnet changeOwner erd1qqqqqqqqqqqqqpgqltvtlxz8h93lwcu8mw3zq43808vtuh3rr0vs3ztu84 erd1qqqqqqqqqqqqqpgq9x4w6vj42gcjdt5z6vkx7ym2zpczn24pr0vs8a88k4 1
+*/
+program.command('changeOwner')
+  .argument('[target]', 'contract address', '')
+  .argument('[newOwner]', 'The address of new owner', '')
+  .argument('[shardId]', 'Shard number')
+  .action(async (target: string, newOwner: string, shardId: number) => {
+    const wallet = await loadWallet(shardId);
+
+    console.log('Changing owner of contract...');
+    const txResult = await wallet.callContract({
+      callee: target,
+      gasLimit: 10_000_000,
+      funcName: 'ChangeOwnerAddress',
+      funcArgs: [
+        e.Addr(newOwner),
+      ],
+    });
+    console.log('Changed owner', txResult);
+  });
+
 program.command('importAddresses')
   .argument('[shardId]', 'Shard number')
   .action(async (shardId: number) => {
@@ -753,9 +778,9 @@ program.command('timelockTest')
         e.U(0),
         e.Str('importAddresses'),
         e.U32(1),
-        e.Bytes(Buffer.from('deployerAddress2', 'utf-8')),
+        e.Bytes(Buffer.from('deployerAddress', 'utf-8')),
         e.U32(1),
-        e.Addr('erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m'),
+        e.Addr('erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j'),
       ],
     });
 
@@ -827,7 +852,6 @@ program.command('timelockPendingCalls')
     });
 
     console.log('deployerAddress:', await getAddressByString('deployerAddress'));
-    console.log('deployerAddress2:', await getAddressByString('deployerAddress2'));
 
     console.log(calls);
   });
