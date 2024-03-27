@@ -1,6 +1,5 @@
 import { Command } from 'commander';
 import { e } from 'xsuite';
-// @ts-ignore
 import { Address, SmartContract } from '@multiversx/sdk-core';
 
 import { envChain } from './customEnvChain.js';
@@ -12,12 +11,13 @@ import {
   timelockPrintPendingCalls,
   timelockPrintState
 } from "./actions/timelockActions";
+import {loadWallet, printTxStatus} from "./actions/helpers";
 
 
 const program = new Command();
 
 /*
-npm run timelock:devnet performNextCall --shardId 1
+npm run interact:devnet performNextCall --shardId 1
 */
 program.command('performNextCall')
   .argument('[shardId]', 'Shard number')
@@ -26,7 +26,7 @@ program.command('performNextCall')
   });
 
 /*
-npm run timelock:devnet discardCall --shardId 1
+npm run interact:devnet discardCall --shardId 1
 */
 program.command('discardCall')
   .argument('[shardId]', 'Shard number')
@@ -35,7 +35,7 @@ program.command('discardCall')
   });
 
 /*
-npm run timelock:devnet test --shardId 1
+npm run interact:devnet test --shardId 1
 */
 program.command('test')
   .argument('[shardId]', 'Shard number')
@@ -43,6 +43,8 @@ program.command('test')
     const wallet = await loadWallet(shardId);
     const timeLock = new SmartContract({ address: Address.fromBech32(envChain.select(data.timeLockAddress)) });
     const registry = new SmartContract({ address: Address.fromBech32(envChain.select(data.registryAddress)) });
+
+    console.log('empty', Address.empty());
 
     const tx = await wallet.callContract({
       callee: timeLock.getAddress().bech32(),
@@ -55,40 +57,37 @@ program.command('test')
         e.U32(1),
         e.Bytes(Buffer.from('deployerAddress', 'utf-8')),
         e.U32(1),
-        e.Addr('erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j'),
+        // e.Addr('erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j'),
+        // e.Addr('erd10000000000000000000000000000000000000000000000000000000000'),
+        e.Addr(Buffer.alloc(32)),
       ],
     });
 
-    console.log('explorerUrl', tx.tx.explorerUrl);
-    console.log('status', tx.tx.status);
-
-    if (tx.tx.status != 'success') {
-      console.log(tx);
-    }
+    printTxStatus(tx);
   });
 
 /*
-npm run timelock:devnet printState
+npm run interact:devnet timelockPrintState
 */
-program.command('printState')
+program.command('timelockPrintState')
   .action(async () => {
     await timelockPrintState();
   });
 
 /*
-npm run timelock:devnet pendingCalls
+npm run interact:devnet timelockPendingCalls
 */
-program.command('pendingCalls')
+program.command('timelockPendingCalls')
   .action(async () => {
     await timelockPrintPendingCalls();
   });
 
 /*
-npm run timelock:devnet changeOwner
+npm run interact:devnet timelockChangeOwner
 change registry owner back to deployer:
-npm run timelock:devnet changeOwner erd1qqqqqqqqqqqqqpgqltvtlxz8h93lwcu8mw3zq43808vtuh3rr0vs3ztu84 erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j 1
+npm run interact:devnet timelockChangeOwner erd1qqqqqqqqqqqqqpgqltvtlxz8h93lwcu8mw3zq43808vtuh3rr0vs3ztu84 erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j 1
 */
-program.command('changeOwner')
+program.command('timelockChangeOwner')
   .argument('[target]', 'contract address', '')
   .argument('[newOwner]', 'The address of new owner', '')
   .argument('[shardId]', 'Shard number')
@@ -96,4 +95,4 @@ program.command('changeOwner')
     await timelockChangeOwner(target, newOwner, shardId);
   });
 
-program.parse(process.argv);
+export const timelockCommands = program;

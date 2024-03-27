@@ -12,9 +12,8 @@ import {ProxyNetworkProvider} from "@multiversx/sdk-network-providers/out";
 
 import {envChain} from '../customEnvChain';
 import data from '../data.json';
-import {loadWallet} from "../index";
 import TimeLockAbi from "../../time-lock/output/time-lock.abi.json";
-import {getAddressByString, printTxStatus, readFromTimelock} from "./helpers";
+import {getAddressByString, loadWallet, printTxStatus, readFromTimelock} from "./helpers";
 
 export async function timelockChangeOwner(target: string, newOwner: string, shardId: number) {
   const wallet = await loadWallet(shardId);
@@ -89,7 +88,8 @@ export async function timelockPrintState() {
   console.log({
     timeLockPeriod,
     multisigAddress,
-    pendingCalls: pendingCalls.length
+    pendingCalls: pendingCalls.length,
+    deployerAddress: await getAddressByString('deployerAddress')
   });
 }
 

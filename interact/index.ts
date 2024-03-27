@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { d, e, World } from 'xsuite';
+import { d, e } from 'xsuite';
 // @ts-ignore
 import data from './data.json';
 import { Address, ResultsParser, SmartContract } from '@multiversx/sdk-core';
@@ -29,6 +29,7 @@ import { envChain } from './customEnvChain.js';
 import { readJson, saveToJson } from './utils';
 import { ChainName, ContractName, DataJson } from './types';
 import {getAddressByString, loadWallet, printTxStatus} from "./actions/helpers";
+import {timelockCommands} from "./timelock";
 
 const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
 const STAKING_BANK_NAME = 'StakingBank';
@@ -59,7 +60,7 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
   return dataJson;
 }
 
-const program = new Command();
+const program = timelockCommands;
 
 program.command('deploy')
   .argument('[requiredSignatures]', 'The number of required signatures', 2)
@@ -699,6 +700,5 @@ program.command('ProposeChangeOwnerAddressData')
     console.log('set 15M gas limit');
 
   });
-
 
 program.parse(process.argv);
