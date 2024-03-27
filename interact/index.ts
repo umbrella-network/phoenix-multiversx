@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { d, e, World } from 'xsuite';
+import { d, e } from 'xsuite';
 // @ts-ignore
 import data from './data.json';
 import { Address, ResultsParser, SmartContract } from '@multiversx/sdk-core';
@@ -28,22 +28,12 @@ import createKeccakHash from 'keccak';
 import { envChain } from './customEnvChain.js';
 import { readJson, saveToJson } from './utils';
 import { ChainName, ContractName, DataJson } from './types';
+import {getAddressByString, loadWallet, printTxStatus} from "./actions/helpers";
+import {timelockCommands} from "./timelock";
 
 const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
 const STAKING_BANK_NAME = 'StakingBank';
 const dataJsonFile = __dirname + '/data.json';
-
-const world = World.new({
-  proxyUrl: envChain.publicProxyUrl(),
-  chainId: envChain.id(),
-  gasPrice: 1000000000,
-});
-
-export const loadWallet = (shard: number) => {
-  if (shard === undefined) throw new Error(`please provide shard ID`);
-
-  return world.newWalletFromFile(`wallets/${envChain.name()}/deployer.${envChain.name()}.shard${shard}.json`);
-};
 
 function saveDeploymentResults(contract: ContractName, address: string): DataJson {
   const dataJson = readJson<DataJson>(dataJsonFile);
@@ -70,7 +60,7 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
   return dataJson;
 }
 
-const program = new Command();
+const program = timelockCommands;
 
 program.command('deploy')
   .argument('[requiredSignatures]', 'The number of required signatures', 2)
@@ -94,7 +84,7 @@ program.command('deploy')
     console.log('selected ID:', envChain.select(data.chainId), BigInt(envChain.select(data.chainId)));
 
     const result = await wallet.deployContract({
-      code: data.code,
+      code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -109,7 +99,7 @@ program.command('deploy')
 
     console.log('Deploying Registry contract...');
     const resultRegistry = await wallet.deployContract({
-      code: data.registryCode,
+      code: envChain.select(data.registryCode),
       codeMetadata: [],
       gasLimit: 100_000_000,
     });
@@ -147,7 +137,7 @@ program.command('deployTimeLock')
 
     console.log('Deploying Time Lock contract...');
     const resultTimeLock = await wallet.deployContract({
-      code: data.timeLockCode,
+      code: envChain.select(data.timeLockCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -172,6 +162,33 @@ program.command('deployTimeLock')
 
     console.log('Time Lock Address:', resultTimeLock.address);
   });
+
+
+/*
+npm run interact:devnet changeOwner
+change registry owner to timelock:
+npm run interact:devnet changeOwner erd1qqqqqqqqqqqqqpgqltvtlxz8h93lwcu8mw3zq43808vtuh3rr0vs3ztu84 erd1qqqqqqqqqqqqqpgq9x4w6vj42gcjdt5z6vkx7ym2zpczn24pr0vs8a88k4 1
+*/
+program.command('changeOwner')
+  .argument('[target]', 'contract address', '')
+  .argument('[newOwner]', 'The address of new owner', '')
+  .argument('[shardId]', 'Shard number')
+  .action(async (target: string, newOwner: string, shardId: number) => {
+    const wallet = await loadWallet(shardId);
+
+    console.log('Changing owner of contract...');
+    const txResult = await wallet.callContract({
+      callee: target,
+      gasLimit: 10_000_000,
+      funcName: 'ChangeOwnerAddress',
+      funcArgs: [
+        e.Addr(newOwner),
+      ],
+    });
+
+    printTxStatus(txResult);
+  });
+
 
 program.command('importAddresses')
   .argument('[shardId]', 'Shard number')
@@ -207,7 +224,7 @@ program.command('upgradeRegistry')
     console.log('Upgrading Registry contract', address);
     const resultRegistry = await wallet.upgradeContract({
       callee: address,
-      code: dataJson.registryCode,
+      code: envChain.select(dataJson.registryCode),
       codeMetadata: [],
       gasLimit: 100_000_000,
     });
@@ -254,7 +271,7 @@ program.command('upgradeFeeds')
 
     const result = await wallet.upgradeContract({
       callee: address,
-      code: dataJson.code,
+      code: envChain.select(dataJson.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -287,7 +304,7 @@ program.command('upgrade')
     console.log(`Upgrading Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
     const result = await wallet.upgradeContract({
       callee: envChain.select(data.address),
-      code: data.code,
+      code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -443,28 +460,20 @@ program.command('getPriceData')
     console.log('price data for ETH-USD', contractPriceData);
   });
 
-async function getAddressByString(name: string): Promise<string> {
-  const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
-  const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.registryAddress)) });
 
-  const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
-    .buildQuery();
-  const response = await proxy.queryContract(query);
-  const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
-
-  return Address.fromBuffer(parsedResponse.values[0]).bech32();
-}
 
 /*
 npm run interact:mainnet checkRegisteredAddresses
+npm run interact:devnet checkRegisteredAddresses
 */
 program.command('checkRegisteredAddresses')
-  .action(async () => {
-    const names = ['StakingBank', 'UmbrellaFeeds'];
+  .argument('[names]', 'Names to check eg: a,b', '')
+  .action(async (names: string) => {
+    const toCheck = [...(names.split(',')), 'StakingBank', 'UmbrellaFeeds'].filter(n => !!n);
 
-    const addresses = await Promise.all(names.map(name => getAddressByString(name)));
+    const addresses = await Promise.all(toCheck.map(name => getAddressByString(name)));
 
-    names.forEach((name, i) => {
+    toCheck.forEach((name, i) => {
       console.log(`Registry address for ${name}: ${addresses[i]}`);
     });
   });
