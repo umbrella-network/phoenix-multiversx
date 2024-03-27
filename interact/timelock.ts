@@ -21,8 +21,9 @@ npm run interact:devnet performNextCall --shardId 1
 */
 program.command('performNextCall')
   .argument('[shardId]', 'Shard number')
-  .action(async (shardId: number) => {
-    await timelockPerformNextCall(shardId);
+  .argument('[gas]', 'gas limit in milions', 10)
+  .action(async (shardId: number, gas: number) => {
+    await timelockPerformNextCall(shardId, gas * 1_000_000);
   });
 
 /*

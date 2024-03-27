@@ -27,7 +27,6 @@ export async function timelockChangeOwner(target: string, newOwner: string, shar
       e.Addr(target),
       e.U(0),
       e.Str('ChangeOwnerAddress'),
-      e.U32(1),
       e.Addr(newOwner),
     ],
   });
@@ -57,11 +56,13 @@ export async function timelockPrintPendingCalls() {
       fields as unknown as [AddressValue, NumericalValue, StringValue, ListType, NumericalValue];
 
     const performAfterTimestamp = parseInt(perform_after_timestamp.value.toString(10));
+    const readyToExecute = performAfterTimestamp < Date.now() / 1000;
 
     return {
       to: new Address(to.value.value).bech32(),
       performAfterTimestamp,
-      readyToExecute: performAfterTimestamp < Date.now() / 1000,
+      readyToExecute,
+      wait: readyToExecute ? 0 : performAfterTimestamp - Date.now() / 1000,
       endpoint_name: Buffer.from(endpoint_name.value.value).toString('utf-8'),
       egld_amount: BigInt(new BigNumber(egld_amount.value).toFixed()),
       args: JSON.stringify(args.value),
@@ -71,7 +72,7 @@ export async function timelockPrintPendingCalls() {
 
   console.log(calls);
   console.log(calls.length, 'pending calls');
-  console.log(calls.map(c => c.readyToExecute).length, 'ready to execute');
+  console.log(calls.filter(c => c.readyToExecute).length, 'ready to execute');
 }
 
 
@@ -93,13 +94,13 @@ export async function timelockPrintState() {
   });
 }
 
-export async function timelockPerformNextCall(shardId: number) {
+export async function timelockPerformNextCall(shardId: number, gas = 10_000_000) {
   const wallet = await loadWallet(shardId);
   const contract = new SmartContract({address: Address.fromBech32(envChain.select(data.timeLockAddress))});
 
   const tx = await wallet.callContract({
     callee: contract.getAddress().bech32(),
-    gasLimit: 10_000_000,
+    gasLimit: gas,
     funcName: 'performNextCall',
     funcArgs: []
   });
