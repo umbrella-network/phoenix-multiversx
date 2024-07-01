@@ -9,13 +9,13 @@ publish = false
 path = "src/lib.rs"
 
 [dependencies.multiversx-sc]
-version = "0.47.4"
+version = "0.50.5"
 
 [dependencies.multiversx-sc-modules]
-version = "0.47.4"
+version = "0.50.5"
 
 [dependencies.staking-bank-static-module]
 path = "../../common/modules/staking-bank-static-module"
 
 [dev-dependencies.multiversx-sc-scenario]
-version = "0.47.4"
+version = "0.50.5"
