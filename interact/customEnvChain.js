@@ -26,6 +26,12 @@ exports.envChain = {
     mainnet: "https://gateway.multiversx.com",
     sbx: "https://devnet-gateway.multiversx.com",
   }),
+  elasticSearch: () => exports.envChain.select({
+    devnet: "https://devnet-index.multiversx.com",
+    testnet: "",
+    mainnet: "https://index.multiversx.com",
+    sbx: "https://devnet-index.multiversx.com",
+  }),
 };
 const isChainName = (chain) => {
   return chainNames.includes(chain);
