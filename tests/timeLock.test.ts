@@ -359,6 +359,7 @@ test('Test multisig timelock flow staking bank upgrade', async () => {
       contract, // needs to be to timelock contract
       e.U(0), // egld amount is 0,
       e.Str('proposeCall'), // function is propose call
+
       stakingBank, // to argument from proposeCall function on timelock
       e.U(0), // egld amount from proposalCall function on timelock
       e.Str('upgradeContract'), // function to call on staking bank
