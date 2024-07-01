@@ -1,12 +1,27 @@
 {
-  "code": "file:umbrella-feeds/output/umbrella-feeds.wasm",
-  "registryCode": "file:registry/output/registry.wasm",
-  "timeLockCode": "file:time-lock/output/time-lock.wasm",
+  "feedCode": {
+    "testnet": "file:umbrella-feeds/output/umbrella-feeds.wasm",
+    "devnet": "file:build-output/umbrella-feeds/umbrella-feeds.wasm",
+    "mainnet": "file:build-output/umbrella-feeds/umbrella-feeds.wasm",
+    "sbx": "file:build-output/umbrella-feeds/umbrella-feeds.wasm"
+  },
+  "registryCode": {
+    "testnet": "file:registry/output/registry.wasm",
+    "devnet": "file:build-output/registry/registry.wasm",
+    "mainnet": "file:build-output/registry/registry.wasm",
+    "sbx": "file:build-output/registry/registry.wasm"
+  },
+  "timeLockCode": {
+    "testnet": "file:time-lock/output/time-lock.wasm",
+    "devnet": "file:build-output/time-lock/time-lock.wasm",
+    "mainnet": "file:build-output/time-lock/time-lock.wasm",
+    "sbx": "file:build-output/time-lock/time-lock.wasm"
+  },
   "stakingBankCode": {
-    "devnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
     "testnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
-    "mainnet": "file:staking-bank-static/staking-bank-static-prod/output/staking-bank-static-prod.wasm",
-    "sbx": "file:staking-bank-static/staking-bank-static-sbx/output/staking-bank-static-sbx.wasm"
+    "devnet": "file:build-output/staking-bank-static-dev/staking-bank-static-dev.wasm",
+    "mainnet": "file:build-output/staking-bank-static-prod/staking-bank-static-prod.wasm",
+    "sbx": "file:build-output/staking-bank-static-sbx/staking-bank-static-sbx.wasm"
   },
   "abi": "offers/output/offers.abi.json",
   "stakingBankAddress": {
@@ -31,7 +46,7 @@
     "devnet": "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m",
     "testnet": "",
     "mainnet": "",
-    "sbx": ""
+    "sbx": "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m"
   },
   "multisigAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t",
