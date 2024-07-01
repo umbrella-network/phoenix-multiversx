@@ -72,11 +72,17 @@ To list available commands run:
 - download generated files and unzip to `build-output`
 - run deploy command (testnet commands run on local builds files, other runs on downloaded onces)
   eg `npm run interact:sbx deployTimeLock [timeLockPeriod] [multisigAddress] [shardId]`
-  eg `npm run interact:sbx deployTimeLock 60 erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t 1`
+  `npm run interact:sbx deployTimeLock 60 erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t 1`
+  `npm run interact:devnet deployTimeLock 120 erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j 1`
 - verify contract
 ```
 mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
 --packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v2.3.5"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqxdxe5d9aldkgja2azsy8sgfpsthuyt5nr0vs0axeur" \
+--packaged-src=./build-output/registry/registry-0.0.0.source.json \
 --verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v2.3.5"  \
 --pem=./wallets/sbx/deployer.sbx.shard1.pem
 ```
