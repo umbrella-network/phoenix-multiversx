@@ -6,6 +6,8 @@ Need to have `mxpy` installed!
 
 https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy
 
+If CI starts to fail because of build - update `mxpy` and rebuild all locally.
+
 ### Wallet creation
 
 ```shell
