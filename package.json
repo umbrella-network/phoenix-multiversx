@@ -1,5 +1,5 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "scripts": {
     "build": "npm run build:feeds && npm run build:bank:static:local && npm run build:registry && npm run build:time-lock",
@@ -26,6 +26,7 @@
     "@multiversx/sdk-network-providers": "^1.5.0",
     "@multiversx/sdk-wallet": "^4.2.0",
     "@types/node": "^18.16.18",
+    "axios": "~1.7.2",
     "commander": "11.0.0",
     "tsx": "^3.12.7",
     "typescript": "^5.0.4",

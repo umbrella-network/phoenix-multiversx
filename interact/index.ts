@@ -1,5 +1,7 @@
 import { Command } from 'commander';
-import { d, e, World } from 'xsuite';
+import { d, e } from 'xsuite';
+import axios from 'axios';
+
 // @ts-ignore
 import data from './data.json';
 import { Address, ResultsParser, SmartContract } from '@multiversx/sdk-core';
@@ -28,22 +30,14 @@ import createKeccakHash from 'keccak';
 import { envChain } from './customEnvChain.js';
 import { readJson, saveToJson } from './utils';
 import { ChainName, ContractName, DataJson } from './types';
+import {getAddressByString, loadWallet, printTxStatus} from "./actions/helpers";
+import {timelockCommands} from "./timelock";
+import WebSocket_2 from "vite";
+import Data = WebSocket_2.Data;
 
 const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
 const STAKING_BANK_NAME = 'StakingBank';
 const dataJsonFile = __dirname + '/data.json';
-
-const world = World.new({
-  proxyUrl: envChain.publicProxyUrl(),
-  chainId: envChain.id(),
-  gasPrice: 1000000000,
-});
-
-export const loadWallet = (shard: number) => {
-  if (shard === undefined) throw new Error(`please provide shard ID`);
-
-  return world.newWalletFromFile(`wallets/${envChain.name()}/deployer.${envChain.name()}.shard${shard}.json`);
-};
 
 function saveDeploymentResults(contract: ContractName, address: string): DataJson {
   const dataJson = readJson<DataJson>(dataJsonFile);
@@ -70,7 +64,7 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
   return dataJson;
 }
 
-const program = new Command();
+const program = timelockCommands;
 
 program.command('deploy')
   .argument('[requiredSignatures]', 'The number of required signatures', 2)
@@ -172,6 +166,36 @@ program.command('deployTimeLock')
 
     console.log('Time Lock Address:', resultTimeLock.address);
   });
+
+
+/*
+npm run interact:devnet changeOwner
+change registry owner to timelock:
+npm run interact:devnet changeOwner registryAddress erd1qqqqqqqqqqqqqpgq9x4w6vj42gcjdt5z6vkx7ym2zpczn24pr0vs8a88k4 1
+*/
+program.command('changeOwner')
+  .argument('[targetName]', 'contract address', '')
+  .argument('[newOwner]', 'The address of new owner OR name of contract', '')
+  .argument('[shardId]', 'Shard number of executor wallet')
+  .action(async (targetName: keyof DataJson, newOwner: string, shardId: number) => {
+    const wallet = await loadWallet(shardId);
+    const target = data[targetName][envChain.name()];
+
+    if (!target) throw new Error(`[${envChain.name()}] unknown address for ${targetName}`)
+
+    console.log('Changing owner of contract...');
+    const txResult = await wallet.callContract({
+      callee: target,
+      gasLimit: 6_500_000,
+      funcName: 'ChangeOwnerAddress',
+      funcArgs: [
+        e.Addr(data[newOwner][envChain.name()] || newOwner),
+      ],
+    });
+
+    printTxStatus(txResult);
+  });
+
 
 program.command('importAddresses')
   .argument('[shardId]', 'Shard number')
@@ -443,28 +467,20 @@ program.command('getPriceData')
     console.log('price data for ETH-USD', contractPriceData);
   });
 
-async function getAddressByString(name: string): Promise<string> {
-  const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
-  const contract = new SmartContract({ address: Address.fromBech32(envChain.select(data.registryAddress)) });
 
-  const query = new Interaction(contract, new ContractFunction('getAddressByString'), [new StringValue(name)])
-    .buildQuery();
-  const response = await proxy.queryContract(query);
-  const parsedResponse = new ResultsParser().parseUntypedQueryResponse(response);
-
-  return Address.fromBuffer(parsedResponse.values[0]).bech32();
-}
 
 /*
 npm run interact:mainnet checkRegisteredAddresses
+npm run interact:devnet checkRegisteredAddresses a
 */
 program.command('checkRegisteredAddresses')
-  .action(async () => {
-    const names = ['StakingBank', 'UmbrellaFeeds'];
+  .argument('[names]', 'Names to check eg: a,b', '')
+  .action(async (names: string) => {
+    const toCheck = [...(names.split(',')), 'StakingBank', 'UmbrellaFeeds'].filter(n => !!n);
 
-    const addresses = await Promise.all(names.map(name => getAddressByString(name)));
+    const addresses = await Promise.all(toCheck.map(name => getAddressByString(name)));
 
-    names.forEach((name, i) => {
+    toCheck.forEach((name, i) => {
       console.log(`Registry address for ${name}: ${addresses[i]}`);
     });
   });
@@ -618,6 +634,43 @@ program.command('hashData').action(async () => {
 
   console.log('Hash data:', result);
   console.log('Local hash data:', localDataHash.toString('hex'));
+});
+
+
+/*
+
+currentOwner
+https://docs.multiversx.com/sdk-and-tools/indices/es-index-tokens/#fields
+
+npm run interact:devnet owners registryAddress
+*/
+program.command('owners')
+  .argument('[contract]', 'contract name (must match names from data.json)')
+  .action(async (contractAddressName: keyof DataJson) => {
+  const proxy = new ProxyNetworkProvider(envChain.publicProxyUrl());
+
+  if (!data[contractAddressName]) throw new Error(`contractAddressName is invalid: ${contractAddressName}`);
+  if (!data[contractAddressName][envChain.name()]) throw new Error(`env name is invalid: ${envChain.name()}`);
+
+  const addr = envChain.select(data[contractAddressName]);
+  console.log(`checking owner of '${contractAddressName}'`, addr);
+
+  const res = await axios.get(`${envChain.elasticSearch()}/accounts/_search`, {
+    headers: {'Content-Type': 'application/json'},
+    data: `{"query": { "match": { "_id": "${addr}" }}, "size":1}`
+  });
+
+  console.log(res.status);
+  console.log(res.statusText);
+  // console.log(JSON.stringify(res.data.hits));
+
+  if (!res.data.hits.hits || res.data.hits.hits.length == 0) {
+    console.error(`owner not found`);
+    return;
+  }
+
+  const {currentOwner, shardID} = res.data.hits.hits[0]._source || res.data.hits.hits[0];
+  console.log(`owner: ${currentOwner}`, 'shard:', shardID);
 });
 
 /*
