@@ -68,6 +68,10 @@ To list available commands run:
 
 ### Reproducible builds
 
+```shell
+npm run interact:devnet deploy 6 8 1
+```
+
 - open PR (or create release) to generate builds, zip file will be attached to github Action or release
 - download generated files and unzip to `build-output`
 - run deploy command (testnet commands run on local builds files, other runs on downloaded onces)
@@ -76,15 +80,15 @@ To list available commands run:
   `npm run interact:devnet deployTimeLock 120 erd1zkdzcqynqks6hyve6538cace9lwepn2rlh9k3ejcw3whwgkzr0vsv0pn7j 1`
 - verify contract
 ```
-mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqpp5ergwx7qq3mpcyrn53cug0k8rx4vxnen6sz9heve" \
 --packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
 --verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v2.3.5"  \
 --pem=./wallets/sbx/deployer.sbx.shard1.pem
 
-mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqxdxe5d9aldkgja2azsy8sgfpsthuyt5nr0vs0axeur" \
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqwuusphevn7ec96dh2cgjthfmdy0556zcr0vslsr39g" \
 --packaged-src=./build-output/registry/registry-0.0.0.source.json \
 --verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v2.3.5"  \
---pem=./wallets/sbx/deployer.sbx.shard1.pem
+--pem=./wallets/devnet/deployer.dev.shard1.pem
 ```
 
 ```
@@ -92,6 +96,13 @@ mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44z
 --packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
 --verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v2.3.5"  \
 --pem=./wallets/sbx/deployer.sbx.shard1.pem
+```
+
+```
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqwuusphevn7ec96dh2cgjthfmdy0556zcr0vslsr39g" \
+--packaged-src=./build-output/staking-bank-static-dev/staking-bank-static-dev-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v2.3.5"  \
+--pem=./wallets/devnet/deployer.dev.shard1.pem
 ```
 
 ### Development build & deploy
