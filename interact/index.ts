@@ -153,26 +153,18 @@ program.command('deployTimeLock')
 
     saveDeploymentResults(ContractName.timeLockAddress, resultTimeLock.address);
 
-    console.log('Time Lock Address:', resultTimeLock.address);
-  });
-
-program.command('deployTimeLockOwner')
-  .argument('[shardId]', 'Shard number')
-  .action(async (shardId: number) => {
-    const wallet = await loadWallet(shardId);
-
-    const timelockAddress = data['timelockAddress'][envChain.name()];
-
     console.log('Changing owner of time lock contract to itself...');
     const txResult = await wallet.callContract({
-      callee: timelockAddress,
+      callee: resultTimeLock.address,
       gasLimit: 10_000_000,
       funcName: 'ChangeOwnerAddress',
       funcArgs: [
-        e.Addr(timelockAddress),
+        e.Addr(resultTimeLock.address),
       ],
     });
     console.log('Changed owner of time lock contract', txResult);
+
+    console.log('Time Lock Address:', resultTimeLock.address);
   });
 
 
