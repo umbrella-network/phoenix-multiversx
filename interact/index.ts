@@ -32,8 +32,6 @@ import { readJson, saveToJson } from './utils';
 import { ChainName, ContractName, DataJson } from './types';
 import {getAddressByString, loadWallet, printTxStatus} from "./actions/helpers";
 import {timelockCommands} from "./timelock";
-import WebSocket_2 from "vite";
-import Data = WebSocket_2.Data;
 
 const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
 const STAKING_BANK_NAME = 'StakingBank';
@@ -132,21 +130,26 @@ program.command('deploy')
     console.log('Registry Address', resultRegistry.address);
   });
 
+/*
+npm run interact:devnet deployTimeLock 60 multisigAddress 1
+ */
 program.command('deployTimeLock')
-  .argument('[timeLockPeriod]', 'The time lock period in seconds', 2)
-  .argument('[multisigAddress]', 'The address of the multisig', 8)
+  .argument('[timeLockPeriod]', 'The time lock period in seconds', 60)
+  .argument('[multisigAddress]', 'The name (or address) of the multisig')
   .argument('[shardId]', 'Shard number')
   .action(async (timeLockPeriod: number, multisigAddress: string, shardId: number) => {
     const wallet = await loadWallet(shardId);
 
-    console.log('Deploying Time Lock contract...');
+    const multisig = data[multisigAddress][envChain.name()] || multisigAddress;
+
+    console.log(`Deploying Time Lock contract with multisig ${multisig}...`);
     const resultTimeLock = await wallet.deployContract({
       code: envChain.select(data.timeLockCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
         e.U64(BigInt(timeLockPeriod)),
-        e.Addr(multisigAddress),
+        e.Addr(multisig),
       ],
     });
     console.log('Time Lock Result', resultTimeLock);
@@ -310,7 +313,7 @@ program.command('upgrade')
 
     console.log(`Upgrading Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
     const result = await wallet.upgradeContract({
-      callee: envChain.select(data.address),
+      callee: envChain.select(data.feedsAddress),
       code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
