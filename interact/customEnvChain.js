@@ -15,7 +15,7 @@ exports.envChain = {
   select: (values) => {
     const value = values[exports.envChain.name()];
     if (value === undefined) {
-      throw new Error("No value for CHAIN environment variable.");
+      throw new Error(`No value for CHAIN ${exports.envChain.name()} environment variable`);
     }
     return value;
   },
