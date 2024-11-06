@@ -116,26 +116,56 @@ mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44z
 --pem=./wallets/sbx/deployer.sbx.shard1.pem
 ```
 
+#### steps for SBX
+```
+npm run interact:sbx upgrade 2 8 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgquyj0msy6dlsezqjp2ea0tljuvgwpc3gcen6s8aqwdn" \
+--packaged-src=./build-output/staking-bank-static-sbx/staking-bank-static-sbx-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9j5chyk8zmjgj4ez4x92x5jq2s8h56yren6sj8zhsj" \
+--packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+npm run interact:sbx deployTimeLock 60 multisigAddress 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
+--packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+```
+
+#### steps for PROD
+```
+npm run interact:mainnet upgrade 6 8 1
+
+mxpy --verbose contract verify "" \
+--packaged-src=./build-output/staking-bank-static-prod/staking-bank-static-prod-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9j5chyk8zmjgj4ez4x92x5jq2s8h56yren6sj8zhsj" \
+--packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+
+npm run interact:sbx deployTimeLock 60 multisigAddress 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
+--packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+```
+
 #### generate source code
 
 - open PR (or create release) to generate builds, zip file will be attached to github Action or release
 - download generated files and unzip to `build-output`
 - run deploy command (testnet commands run on local builds files, other runs on downloaded onces)
 - verify contract
-
-```
-mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
---packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
---verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
---pem=./wallets/sbx/deployer.sbx.shard1.pem
-```
-
-```
-mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq8dac6l7gu4rv48u8h2a4w6wtmf0sgrhu3pmszmvtqs" \
---packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
---verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
---pem=./wallets/mainnet/deployer.mainnet.shard1.pem
-```
 
 ### Development build & deploy
 
