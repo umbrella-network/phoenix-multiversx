@@ -157,6 +157,7 @@ program.command('deployTimeLock')
     saveDeploymentResults(ContractName.timeLockAddress, resultTimeLock.address);
 
     console.log('Time Lock Address:', resultTimeLock.address);
+    console.log('To finalise, you need to change timelock ownership to itself by executing `deployTimeLockOwner`');
   });
 
 program.command('deployTimeLockOwner')
