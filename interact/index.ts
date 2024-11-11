@@ -655,6 +655,9 @@ currentOwner
 https://docs.multiversx.com/sdk-and-tools/indices/es-index-tokens/#fields
 
 npm run interact:devnet owners registryAddress
+npm run interact:sbx owners registryAddress
+npm run interact:mainnet owners registryAddress
+npm run interact:mainnet owners feedsAddress
 */
 program.command('owners')
   .argument('[contract]', 'contract name (must match names from data.json)')
@@ -682,7 +685,10 @@ program.command('owners')
   }
 
   const {currentOwner, shardID} = res.data.hits.hits[0]._source || res.data.hits.hits[0];
-  console.log(`owner: ${currentOwner}`, 'shard:', shardID);
+
+  const multisigAddress = envChain.select(data['multisigAddress']);
+  const isTimelock = (currentOwner == multisigAddress) ? '(multisig)' : '';
+  console.log(`owner: ${currentOwner}`, isTimelock, 'shard:', shardID);
 });
 
 /*

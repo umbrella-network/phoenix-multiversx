@@ -51,7 +51,7 @@
   "multisigAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t",
     "testnet": "",
-    "mainnet": "",
+    "mainnet": "erd1qqqqqqqqqqqqqpgqu7c4heggk9ye7trygjcw83gtjjta8dly3pmst2qqjq",
     "sbx": "erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t"
   },
   "chainId": {
