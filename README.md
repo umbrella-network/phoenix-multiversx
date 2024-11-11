@@ -70,6 +70,13 @@ To list available commands run:
 
 Note: initial deployment was done without reproducible builds, so there is a need to redeploy bank and feeds contracts.
 
+#### generate source code
+
+- open PR (or create release) to generate builds, zip file will be attached to github Action or release
+- download generated files and unzip to `build-output`
+- run deploy command (testnet commands run on local builds files, other runs on downloaded onces)
+- verify contract
+
 #### steps for DEV
 ```
 npm run interact:devnet upgrade 2 8 1
@@ -160,13 +167,6 @@ mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44z
 --pem=./wallets/mainnet/deployer.mainnet.shard1.pem
 ```
 
-#### generate source code
-
-- open PR (or create release) to generate builds, zip file will be attached to github Action or release
-- download generated files and unzip to `build-output`
-- run deploy command (testnet commands run on local builds files, other runs on downloaded onces)
-- verify contract
-
 ### Development build & deploy
 
 
@@ -206,6 +206,10 @@ self.create(
   - running `ChangeOwnerAddressData` command 
   - or use `mxpy wallet convert --in-format=raw-mnemonic --out-format=address-hex`
 - set valid URL for validator
+
+### Update validators list
+
+To update the list, go to `staking-bank-static/staking-bank-static-prod/src/lib.rs`.
 
 ```shell
 npm run build:bank:static:prod
