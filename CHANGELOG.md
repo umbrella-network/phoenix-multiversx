@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [1.2.0] - 2024-11-11
+### Updated
+- new list of 15 validators
+
 ## [1.1.2] - 2024-07-03
 ### Updated
 - newest packages versions and interaction scripts for timelock

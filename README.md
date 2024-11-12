@@ -22,7 +22,6 @@ Create json with keystore, use:  `--out-format=keystore-mnemonic`
 
 ## Build
 
-
 `npm run build` - builds Registry, StakingBankStaticLocal and UmbrellaFeeds
 
 Feeds:
@@ -56,6 +55,8 @@ Then use the appropriate command to interact with the contract on the appropriat
 
 `npm run interact:testnet [command]`
 
+`npm run interact:alpha [command]`
+
 `npm run interact:mainnet [command]`
 
 `npm run interact:sbx [command]`
@@ -66,12 +67,142 @@ To list available commands run:
 
 ## Deploy & Upgrade
 
+### Reproducible builds
+
+Note: initial deployment was done without reproducible builds, so there is a need to redeploy bank and feeds contracts.
+
+#### generate source code
+
+- open PR (or create release) to generate builds, zip file will be attached to github Action or release
+- download generated files and unzip to `build-output`
+- run deploy command (testnet commands run on local builds files, other runs on downloaded onces)
+- verify contract
+
+#### steps for DEV
+```
+npm run interact:devnet upgrade 2 8 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq08j3yxfcqfzgwl3dr7fl3jkx3nq46nvjr0vsvp7zhw" \
+--packaged-src=./build-output/staking-bank-static-dev/staking-bank-static-dev-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/devnet/deployer.dev.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqvlu2tus9ah4mwa7n8kukp60kl6j68zfrr0vs5vsu4n" \
+--packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/devnet/deployer.dev.shard1.pem
+
+npm run interact:devnet importAddresses 1
+
+npm run interact:devnet deployTimeLock 60 multisigAddress 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqhylfgcwvw2ac6grctur6jr7py6vt5tj4r0vsfrv5eu" \
+--packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/devnet/deployer.dev.shard1.pem
+```
+
+#### steps for SBX
+```
+npm run interact:sbx upgrade 2 8 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgquyj0msy6dlsezqjp2ea0tljuvgwpc3gcen6s8aqwdn" \
+--packaged-src=./build-output/staking-bank-static-sbx/staking-bank-static-sbx-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9j5chyk8zmjgj4ez4x92x5jq2s8h56yren6sj8zhsj" \
+--packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+npm run interact:sbx deployTimeLock 60 multisigAddress 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
+--packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+```
+
+#### steps for SBX
+```
+npm run interact:sbx upgrade 2 8 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgquyj0msy6dlsezqjp2ea0tljuvgwpc3gcen6s8aqwdn" \
+--packaged-src=./build-output/staking-bank-static-sbx/staking-bank-static-sbx-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9j5chyk8zmjgj4ez4x92x5jq2s8h56yren6sj8zhsj" \
+--packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+
+npm run interact:sbx deployTimeLock 60 multisigAddress 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
+--packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://devnet-play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/sbx/deployer.sbx.shard1.pem
+```
+
+#### steps for PROD
+
+For fresh deployments, use `interact:mainnet deploy` command.
+
+For updating: easiest way is to temporary change owner to wallet, redeploy, change owners back to multisig/timelock.
+
+Steps for multisig:
+
+1. goto multisig and change owner, helper script: `ChangeOwnerAddressData`, eg:
+   ```
+   proposeAsyncCall@000000000000000005002308e651ca2195846a49571b854b1e3c2f123a3a8877@@4368616e67654f776e657241646472657373@9e7ea5b8c875f4bd7bb65c7144d84eab06514ea2882afc3348f88bf01fe98877
+   ```
+   `000000000000000005002308e651ca2195846a49571b854b1e3c2f123a3a8877` -> `erd1qqqqqqqqqqqqqpgqyvywv5w2yx2cg6jf2udc2jc78sh3yw363pmsa5awet` (StakingBank)
+   `4368616e67654f776e657241646472657373` -> `ChangeOwnerAddress`
+   `9e7ea5b8c875f4bd7bb65c7144d84eab06514ea2882afc3348f88bf01fe98877` -> `erd1nel2twxgwh6t67akt3c5fkzw4vr9zn4z3q40cv6glz9lq8lf3pmsfy7ksd` (new deployer wallet)
+2. execute necessary actions eg. 
+3. change owner back to multisig `npm run interact:sbx changeOwner registryAddress multisigAddress 1`
+
+
+```bash
+npm run interact:mainnet upgrade 6 8 1
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq8k2258efpgrpey6lj2j3dups7u32yfgs3pmscq5pc3" \
+--packaged-src=./build-output/registry/registry-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqyvywv5w2yx2cg6jf2udc2jc78sh3yw363pmsa5awet" \
+--packaged-src=./build-output/staking-bank-static-prod/staking-bank-static-prod-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq8dac6l7gu4rv48u8h2a4w6wtmf0sgrhu3pmszmvtqs" \
+--packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+
+npm run interact:sbx deployTimeLock 60 multisigAddress 1
+
+mxpy --verbose contract verify "" \
+--packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+```
+
+### Development build & deploy
+
+
 First, you need to build the appropriate contracts. You can run `npm run build:all` to build all of them. Then they can be deployed.
+
 
 `npm run interact:devnet deploy [requiredSignatures] [pricesDecimals] [shardId]` - this will deploy the StakingBankStaticLocal, UmbrellaFeeds and Registry (on devnet).
 The `requiredSignatures` number (default 2) and `pricesDecimals` number (default 8) can optionally be specified
 
 `npm run interact:testnet deploy [requiredSignatures] [pricesDecimals] [shardId]`
+
+`npm run interact:mainnet deploy 6 8 1`
 
 `npm run interact:mainnet deploy [requiredSignatures] [pricesDecimals] [shardId]`
 
@@ -100,7 +231,12 @@ self.create(
 - generate hex by:
   - running `ChangeOwnerAddressData` command 
   - or use `mxpy wallet convert --in-format=raw-mnemonic --out-format=address-hex`
+  - or use https://xconverters.netlify.app/
 - set valid URL for validator
+
+### Update validators list
+
+To update the list, go to `staking-bank-static/staking-bank-static-prod/src/lib.rs`.
 
 ```shell
 npm run build:bank:static:prod

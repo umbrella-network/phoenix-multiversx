@@ -1,4 +1,3 @@
-import { Command } from 'commander';
 import { d, e } from 'xsuite';
 import axios from 'axios';
 
@@ -32,8 +31,6 @@ import { readJson, saveToJson } from './utils';
 import { ChainName, ContractName, DataJson } from './types';
 import {getAddressByString, loadWallet, printTxStatus} from "./actions/helpers";
 import {timelockCommands} from "./timelock";
-import WebSocket_2 from "vite";
-import Data = WebSocket_2.Data;
 
 const UMBRELLA_FEEDS_NAME = 'UmbrellaFeeds';
 const STAKING_BANK_NAME = 'StakingBank';
@@ -43,6 +40,10 @@ function saveDeploymentResults(contract: ContractName, address: string): DataJso
   const dataJson = readJson<DataJson>(dataJsonFile);
 
   switch (envChain.name()) {
+    case ChainName.alpha:
+      dataJson[contract].alpha = address;
+      break;
+
     case ChainName.mainnet:
       dataJson[contract].mainnet = address;
       break;
@@ -88,7 +89,7 @@ program.command('deploy')
     console.log('selected ID:', envChain.select(data.chainId), BigInt(envChain.select(data.chainId)));
 
     const result = await wallet.deployContract({
-      code: data.code,
+      code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -103,7 +104,7 @@ program.command('deploy')
 
     console.log('Deploying Registry contract...');
     const resultRegistry = await wallet.deployContract({
-      code: data.registryCode,
+      code: envChain.select(data.registryCode),
       codeMetadata: [],
       gasLimit: 100_000_000,
     });
@@ -132,39 +133,53 @@ program.command('deploy')
     console.log('Registry Address', resultRegistry.address);
   });
 
+/*
+npm run interact:devnet deployTimeLock 60 multisigAddress 1
+ */
 program.command('deployTimeLock')
-  .argument('[timeLockPeriod]', 'The time lock period in seconds', 2)
-  .argument('[multisigAddress]', 'The address of the multisig', 8)
+  .argument('[timeLockPeriod]', 'The time lock period in seconds', 60)
+  .argument('[multisigAddress]', 'The name (or address) of the multisig')
   .argument('[shardId]', 'Shard number')
   .action(async (timeLockPeriod: number, multisigAddress: string, shardId: number) => {
     const wallet = await loadWallet(shardId);
 
-    console.log('Deploying Time Lock contract...');
+    const multisig = data[multisigAddress][envChain.name()] || multisigAddress;
+
+    console.log(`Deploying Time Lock contract with multisig ${multisig}...`);
     const resultTimeLock = await wallet.deployContract({
-      code: data.timeLockCode,
+      code: envChain.select(data.timeLockCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
         e.U64(BigInt(timeLockPeriod)),
-        e.Addr(multisigAddress),
+        e.Addr(multisig),
       ],
     });
     console.log('Time Lock Result', resultTimeLock);
 
     saveDeploymentResults(ContractName.timeLockAddress, resultTimeLock.address);
 
+    console.log('Time Lock Address:', resultTimeLock.address);
+    console.log('To finalise, you need to change timelock ownership to itself by executing `deployTimeLockOwner`');
+  });
+
+program.command('deployTimeLockOwner')
+  .argument('[shardId]', 'Shard number')
+  .action(async (shardId: number) => {
+    const wallet = await loadWallet(shardId);
+
+    const timelockAddress = data['timelockAddress'][envChain.name()];
+
     console.log('Changing owner of time lock contract to itself...');
     const txResult = await wallet.callContract({
-      callee: resultTimeLock.address,
+      callee: timelockAddress,
       gasLimit: 10_000_000,
       funcName: 'ChangeOwnerAddress',
       funcArgs: [
-        e.Addr(resultTimeLock.address),
+        e.Addr(timelockAddress),
       ],
     });
     console.log('Changed owner of time lock contract', txResult);
-
-    console.log('Time Lock Address:', resultTimeLock.address);
   });
 
 
@@ -172,6 +187,11 @@ program.command('deployTimeLock')
 npm run interact:devnet changeOwner
 change registry owner to timelock:
 npm run interact:devnet changeOwner registryAddress erd1qqqqqqqqqqqqqpgq9x4w6vj42gcjdt5z6vkx7ym2zpczn24pr0vs8a88k4 1
+
+npm run interact:devnet changeOwner registryAddress multisigAddress 1
+npm run interact:alpha changeOwner registryAddress multisigAddress 1
+npm run interact:alpha changeOwner stakingBankAddress multisigAddress 1
+npm run interact:alpha changeOwner feedsAddress multisigAddress 1
 */
 program.command('changeOwner')
   .argument('[targetName]', 'contract address', '')
@@ -231,7 +251,7 @@ program.command('upgradeRegistry')
     console.log('Upgrading Registry contract', address);
     const resultRegistry = await wallet.upgradeContract({
       callee: address,
-      code: dataJson.registryCode,
+      code: envChain.select(dataJson.registryCode),
       codeMetadata: [],
       gasLimit: 100_000_000,
     });
@@ -278,7 +298,7 @@ program.command('upgradeFeeds')
 
     const result = await wallet.upgradeContract({
       callee: address,
-      code: dataJson.code,
+      code: envChain.select(dataJson.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -310,8 +330,8 @@ program.command('upgrade')
 
     console.log(`Upgrading Umbrella Feeds contract with ${requiredSignatures} required signatures and ${priceDecimals} price decimals ...`);
     const result = await wallet.upgradeContract({
-      callee: envChain.select(data.address),
-      code: data.code,
+      callee: envChain.select(data.feedsAddress),
+      code: envChain.select(data.feedCode),
       codeMetadata: ['upgradeable'],
       gasLimit: 100_000_000,
       codeArgs: [
@@ -643,6 +663,9 @@ currentOwner
 https://docs.multiversx.com/sdk-and-tools/indices/es-index-tokens/#fields
 
 npm run interact:devnet owners registryAddress
+npm run interact:sbx owners registryAddress
+npm run interact:mainnet owners registryAddress
+npm run interact:mainnet owners feedsAddress
 */
 program.command('owners')
   .argument('[contract]', 'contract name (must match names from data.json)')
@@ -670,11 +693,18 @@ program.command('owners')
   }
 
   const {currentOwner, shardID} = res.data.hits.hits[0]._source || res.data.hits.hits[0];
-  console.log(`owner: ${currentOwner}`, 'shard:', shardID);
+
+  const multisigAddress = envChain.select(data['multisigAddress']);
+  const timeLockAddress = envChain.select(data['timeLockAddress']);
+  const isMultisig = (currentOwner == multisigAddress) ? '(multisig)' : '';
+  const isTimelock = (currentOwner == timeLockAddress) ? '(timelock)' : '';
+  console.log(`owner: ${currentOwner}`, isMultisig, isTimelock, 'shard:', shardID);
 });
 
 /*
 npm run interact:sbx ChangeOwnerAddressData --newOwner erd1gzeggan5v58lat67tz5qnf9qgnrpczuzh94rjfxg8m3f0ujezvxqtekfvd
+npm run interact:sbx ChangeOwnerAddressData --newOwner erd135qfjx2gkycpwrvkukenfsc372sdtu57dfvej8krtt54h466en6slu6qla
+npm run interact:alpha ChangeOwnerAddressData --newOwner erd1nel2twxgwh6t67akt3c5fkzw4vr9zn4z3q40cv6glz9lq8lf3pmsfy7ksd
  */
 program.command('ChangeOwnerAddressData')
   .argument('newOwner', 'Address of new owner in erd format')
