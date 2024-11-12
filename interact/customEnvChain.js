@@ -19,21 +19,23 @@ exports.envChain = {
     }
     return value;
   },
-  id: () => exports.envChain.select({ devnet: "D", testnet: "T", mainnet: "1", sbx: "D" }),
+  id: () => exports.envChain.select({ devnet: "D", testnet: "T", alpha: "1", mainnet: "1", sbx: "D" }),
   publicProxyUrl: () => exports.envChain.select({
     devnet: "https://devnet-gateway.multiversx.com",
     testnet: "https://testnet-gateway.multiversx.com",
     mainnet: "https://gateway.multiversx.com",
+    alpha: "https://gateway.multiversx.com",
     sbx: "https://devnet-gateway.multiversx.com",
   }),
   elasticSearch: () => exports.envChain.select({
     devnet: "https://devnet-index.multiversx.com",
     testnet: "",
     mainnet: "https://index.multiversx.com",
+    alpha: "https://index.multiversx.com",
     sbx: "https://devnet-index.multiversx.com",
   }),
 };
 const isChainName = (chain) => {
   return chainNames.includes(chain);
 };
-const chainNames = ["devnet", "testnet", "mainnet", "sbx"];
+const chainNames = ["devnet", "testnet", "alpha", "mainnet", "sbx"];

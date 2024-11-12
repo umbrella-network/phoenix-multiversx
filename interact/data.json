@@ -3,24 +3,28 @@
     "testnet": "file:umbrella-feeds/output/umbrella-feeds.wasm",
     "devnet": "file:build-output/umbrella-feeds/umbrella-feeds.wasm",
     "mainnet": "file:build-output/umbrella-feeds/umbrella-feeds.wasm",
+    "alpha": "file:build-output/umbrella-feeds/umbrella-feeds.wasm",
     "sbx": "file:build-output/umbrella-feeds/umbrella-feeds.wasm"
   },
   "registryCode": {
     "testnet": "file:registry/output/registry.wasm",
     "devnet": "file:build-output/registry/registry.wasm",
     "mainnet": "file:build-output/registry/registry.wasm",
+    "alpha": "file:build-output/registry/registry.wasm",
     "sbx": "file:build-output/registry/registry.wasm"
   },
   "timeLockCode": {
     "testnet": "file:time-lock/output/time-lock.wasm",
     "devnet": "file:build-output/time-lock/time-lock.wasm",
     "mainnet": "file:build-output/time-lock/time-lock.wasm",
+    "alpha": "file:build-output/time-lock/time-lock.wasm",
     "sbx": "file:build-output/time-lock/time-lock.wasm"
   },
   "stakingBankCode": {
     "testnet": "file:staking-bank-static/staking-bank-static-dev/output/staking-bank-static-dev.wasm",
     "devnet": "file:build-output/staking-bank-static-dev/staking-bank-static-dev.wasm",
     "mainnet": "file:build-output/staking-bank-static-prod/staking-bank-static-prod.wasm",
+    "alpha": "file:build-output/staking-bank-static-prod/staking-bank-static-prod.wasm",
     "sbx": "file:build-output/staking-bank-static-sbx/staking-bank-static-sbx.wasm"
   },
   "abi": "offers/output/offers.abi.json",
@@ -28,36 +32,42 @@
     "devnet": "erd1qqqqqqqqqqqqqpgq08j3yxfcqfzgwl3dr7fl3jkx3nq46nvjr0vsvp7zhw",
     "testnet": "",
     "mainnet": "erd1qqqqqqqqqqqqqpgqyvywv5w2yx2cg6jf2udc2jc78sh3yw363pmsa5awet",
+    "alpha": "erd1qqqqqqqqqqqqqpgq74tt4cuck4q9prytjdmmrjqyu9j94ddu3pmsfgrcp5",
     "sbx": "erd1qqqqqqqqqqqqqpgquyj0msy6dlsezqjp2ea0tljuvgwpc3gcen6s8aqwdn"
   },
   "feedsAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqvlu2tus9ah4mwa7n8kukp60kl6j68zfrr0vs5vsu4n",
     "testnet": "",
     "mainnet": "erd1qqqqqqqqqqqqqpgq8dac6l7gu4rv48u8h2a4w6wtmf0sgrhu3pmszmvtqs",
+    "alpha": "erd1qqqqqqqqqqqqqpgqfh4mcjfu4vujjrpmnwhnsfvtcg6ge5n83pms27pgg6",
     "sbx": "erd1qqqqqqqqqqqqqpgq9j5chyk8zmjgj4ez4x92x5jq2s8h56yren6sj8zhsj"
   },
   "registryAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqxdxe5d9aldkgja2azsy8sgfpsthuyt5nr0vs0axeur",
     "testnet": "",
     "mainnet": "erd1qqqqqqqqqqqqqpgqcnxl0tr9qgzcu03y9twuv3l6lmqjc5pv3pmshzr0en",
+    "alpha": "erd1qqqqqqqqqqqqqpgq8k2258efpgrpey6lj2j3dups7u32yfgs3pmscq5pc3",
     "sbx": "erd1qqqqqqqqqqqqqpgq263vkz3vlzt2lut8cv9mct8ny2s6j42zen6s3amhgh"
   },
   "timeLockAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqhylfgcwvw2ac6grctur6jr7py6vt5tj4r0vsfrv5eu",
     "testnet": "",
     "mainnet": "",
+    "alpha": "",
     "sbx": "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m"
   },
   "multisigAddress": {
     "devnet": "erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t",
     "testnet": "",
     "mainnet": "erd1qqqqqqqqqqqqqpgqu7c4heggk9ye7trygjcw83gtjjta8dly3pmst2qqjq",
+    "alpha": "erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t",
     "sbx": "erd1qqqqqqqqqqqqqpgqz7cxfe807gw5ssagysejcgtvqu9xwflfdzequhzc5t"
   },
   "chainId": {
     "devnet": 198003,
     "testnet": 198002,
     "mainnet": 198001,
+    "alpha": 198001,
     "sbx": 198003
   }
 }

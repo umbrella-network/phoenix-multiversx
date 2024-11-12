@@ -22,7 +22,6 @@ Create json with keystore, use:  `--out-format=keystore-mnemonic`
 
 ## Build
 
-
 `npm run build` - builds Registry, StakingBankStaticLocal and UmbrellaFeeds
 
 Feeds:
@@ -55,6 +54,8 @@ Then use the appropriate command to interact with the contract on the appropriat
 `npm run interact:devnet [command]`
 
 `npm run interact:testnet [command]`
+
+`npm run interact:alpha [command]`
 
 `npm run interact:mainnet [command]`
 
@@ -146,22 +147,45 @@ mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44z
 ```
 
 #### steps for PROD
-```
+
+For fresh deployments, use `interact:mainnet deploy` command.
+
+For updating: easiest way is to temporary change owner to wallet, redeploy, change owners back to multisig/timelock.
+
+Steps for multisig:
+
+1. goto multisig and change owner, helper script: `ChangeOwnerAddressData`, eg:
+   ```
+   proposeAsyncCall@000000000000000005002308e651ca2195846a49571b854b1e3c2f123a3a8877@@4368616e67654f776e657241646472657373@9e7ea5b8c875f4bd7bb65c7144d84eab06514ea2882afc3348f88bf01fe98877
+   ```
+   `000000000000000005002308e651ca2195846a49571b854b1e3c2f123a3a8877` -> `erd1qqqqqqqqqqqqqpgqyvywv5w2yx2cg6jf2udc2jc78sh3yw363pmsa5awet` (StakingBank)
+   `4368616e67654f776e657241646472657373` -> `ChangeOwnerAddress`
+   `9e7ea5b8c875f4bd7bb65c7144d84eab06514ea2882afc3348f88bf01fe98877` -> `erd1nel2twxgwh6t67akt3c5fkzw4vr9zn4z3q40cv6glz9lq8lf3pmsfy7ksd` (new deployer wallet)
+2. execute necessary actions eg. 
+3. change owner back to multisig `npm run interact:sbx changeOwner registryAddress multisigAddress 1`
+
+
+```bash
 npm run interact:mainnet upgrade 6 8 1
 
-mxpy --verbose contract verify "" \
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq8k2258efpgrpey6lj2j3dups7u32yfgs3pmscq5pc3" \
+--packaged-src=./build-output/registry/registry-0.0.0.source.json \
+--verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
+--pem=./wallets/mainnet/deployer.mainnet.shard1.pem
+
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgqyvywv5w2yx2cg6jf2udc2jc78sh3yw363pmsa5awet" \
 --packaged-src=./build-output/staking-bank-static-prod/staking-bank-static-prod-0.0.0.source.json \
 --verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
 --pem=./wallets/mainnet/deployer.mainnet.shard1.pem
 
-mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9j5chyk8zmjgj4ez4x92x5jq2s8h56yren6sj8zhsj" \
+mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq8dac6l7gu4rv48u8h2a4w6wtmf0sgrhu3pmszmvtqs" \
 --packaged-src=./build-output/umbrella-feeds/umbrella-feeds-0.0.0.source.json \
 --verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
 --pem=./wallets/mainnet/deployer.mainnet.shard1.pem
 
 npm run interact:sbx deployTimeLock 60 multisigAddress 1
 
-mxpy --verbose contract verify "erd1qqqqqqqqqqqqqpgq9lulgyaa3p46yn8kavk2j53pe44zug3ven6se8322m" \
+mxpy --verbose contract verify "" \
 --packaged-src=./build-output/time-lock/time-lock-0.0.0.source.json \
 --verifier-url="https://play-api.multiversx.com" --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"  \
 --pem=./wallets/mainnet/deployer.mainnet.shard1.pem
@@ -177,6 +201,8 @@ First, you need to build the appropriate contracts. You can run `npm run build:a
 The `requiredSignatures` number (default 2) and `pricesDecimals` number (default 8) can optionally be specified
 
 `npm run interact:testnet deploy [requiredSignatures] [pricesDecimals] [shardId]`
+
+`npm run interact:mainnet deploy 6 8 1`
 
 `npm run interact:mainnet deploy [requiredSignatures] [pricesDecimals] [shardId]`
 
@@ -205,6 +231,7 @@ self.create(
 - generate hex by:
   - running `ChangeOwnerAddressData` command 
   - or use `mxpy wallet convert --in-format=raw-mnemonic --out-format=address-hex`
+  - or use https://xconverters.netlify.app/
 - set valid URL for validator
 
 ### Update validators list
