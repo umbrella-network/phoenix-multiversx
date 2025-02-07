@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "staking-bank-static-prod",
             "version": "0.0.0",
-            "gitVersion": "1.1.1-10-gc54c58e"
+            "gitVersion": "1.2.0-2-g1b337a3"
         },
         "framework": {
             "name": "multiversx-sc",

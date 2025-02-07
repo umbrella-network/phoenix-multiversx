@@ -87,7 +87,7 @@ pub trait StakingBank:
         // erd1kz7ws89rr7mzrcz2xr50hu0602fj5kv77xfrrda6wgfmj938ksksqsagkh
         self.create(
             ManagedAddress::from(hex!("b0bce81ca31fb621e04a30e8fbf1fa7a932a599ef19231b7ba7213b91627b42d")),
-            ManagedBuffer::from(b"https://rpc.urbanhq.net")
+            ManagedBuffer::from(b"https://umb.urbanremote.net")
         );
 
         // erd16vna0vl3xyyx0ecasmhxspac357jvjkvpgj5hj7hd2wt9xdxy5xqxgg5zq

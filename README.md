@@ -162,7 +162,7 @@ Steps for multisig:
    `4368616e67654f776e657241646472657373` -> `ChangeOwnerAddress`
    `9e7ea5b8c875f4bd7bb65c7144d84eab06514ea2882afc3348f88bf01fe98877` -> `erd1nel2twxgwh6t67akt3c5fkzw4vr9zn4z3q40cv6glz9lq8lf3pmsfy7ksd` (new deployer wallet)
 2. execute necessary actions eg. 
-3. change owner back to multisig `npm run interact:sbx changeOwner registryAddress multisigAddress 1`
+3. change owner back to multisig `npm run interact:mainnet changeOwner stakingBankAddress multisigAddress 1`
 
 
 ```bash
@@ -239,7 +239,7 @@ self.create(
 To update the list, go to `staking-bank-static/staking-bank-static-prod/src/lib.rs`.
 
 ```shell
-npm run build:bank:static:prod
+npm run build:bank:static:prod # do not run this for reproducible builds, build should be done by CI
 npm run interact:mainnet upgradeBank 1
 npm run interact:mainnet printValidators
 ```
